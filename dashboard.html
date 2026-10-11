@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dashboard · Lamplight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Caveat:wght@600;700&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/lamplight.css">
+<style>
+  .navlinks a[aria-current="page"] { background: var(--hl-yellow); color: #141414; }
+  .avatar { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--ink); background: var(--hl-pink); color: #141414; display: grid; place-items: center; font: 800 17px var(--font-display); text-decoration: none; box-shadow: 0 3px 0 var(--shadow); }
+  .icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--line); background: var(--card); display: grid; place-items: center; cursor: pointer; color: var(--ink); }
+  .pagefoot { margin-top: 80px; border-top: 2px solid var(--ink); padding-block: 24px 40px; color: var(--muted); font-size: 14px; }
+
+  .hello { margin-top: 38px; display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  .hello .hand { font-size: 28px; color: var(--muted); transform: rotate(-2deg); display: inline-block; }
+  .hello h1 { font-size: clamp(44px, 7vw, 88px); letter-spacing: -0.045em; margin-top: 4px; }
+  .hello p { margin: 12px 0 0; font-size: 18px; color: var(--ink-2); max-width: 34em; }
+  .hello .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .card { background: var(--card); border: 2.5px solid var(--ink); border-radius: 24px; box-shadow: 0 6px 0 var(--shadow); padding: 24px; }
+  .label { font: 700 12px var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+  .sec { margin-top: 44px; }
+  .sec-h { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+  .sec-h h2 { font-size: 32px; letter-spacing: -0.035em; }
+  .sec-h a { font-weight: 600; font-size: 15px; color: var(--ink-2); }
+
+  /* tonight's three */
+  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 960px) { .three { grid-template-columns: 1fr; } }
+  .pick { position: relative; display: grid; gap: 12px; align-content: start; text-decoration: none; color: var(--ink); background: var(--card); border: 2.5px solid var(--ink); border-radius: 24px; box-shadow: 0 6px 0 var(--shadow); padding: 22px 22px 20px; transition: transform .12s ease, box-shadow .12s ease; overflow: hidden; }
+  .pick::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 10px; background: var(--c); border-bottom: 2px solid var(--ink); }
+  .pick:hover { transform: translateY(-2px); box-shadow: 0 8px 0 var(--shadow); }
+  .pick .num { position: absolute; top: 22px; right: 20px; font: 800 44px/1 var(--font-display); color: var(--line); letter-spacing: -0.04em; }
+  .pick .tags { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px; padding-right: 44px; }
+  .tag { font: 700 12px var(--font-body); padding: 4px 9px; border-radius: 99px; border: 2px solid var(--ink); background: var(--c); color: #141414; }
+  .code { font: 700 12px var(--font-mono); color: var(--muted); }
+  .pick h3 { font-size: 24px; letter-spacing: -0.03em; line-height: 1.08; }
+  .pick .why { font-size: 15px; color: var(--ink-2); margin: 0; }
+  .pick .foot { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+  .pick .mins { color: var(--muted); font-size: 14px; font-weight: 600; }
+  .pick .foot .btn { margin-left: auto; }
+  .ringwrap { display: flex; align-items: center; gap: 8px; font: 700 11px/1.1 var(--font-body); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  .ring { width: 44px; height: 44px; transform: rotate(-90deg); }
+  .ring .track { stroke: var(--paper-2); }
+  .ring .fill { stroke: var(--good); }
+  .ringwrap b { font: 800 17px var(--font-display); color: var(--ink); text-transform: none; letter-spacing: -0.02em; }
+
+  /* stats row */
+  .stats { display: grid; grid-template-columns: 1.15fr 1fr 1.4fr; gap: 18px; margin-top: 44px; }
+  @media (max-width: 960px) { .stats { grid-template-columns: 1fr; } }
+  .big { font: 800 56px/1 var(--font-display); letter-spacing: -0.045em; }
+  .big small { font-size: 22px; color: var(--muted); letter-spacing: -0.02em; }
+  .gbar { height: 16px; border-radius: 99px; border: 2px solid var(--ink); background: var(--paper); overflow: hidden; margin-top: 16px; }
+  .gbar i { display: block; height: 100%; background: var(--hl-green); border-right: 2px solid var(--ink); transition: width .8s cubic-bezier(.3,.8,.3,1); }
+  .gbar i[style*="width: 0"] { border-right: 0; }
+  .note { margin: 12px 0 0; font-size: 15px; color: var(--ink-2); }
+  .done-stamp { display: inline-block; font: 800 14px var(--font-display); color: var(--good); border: 2.5px solid var(--good); border-radius: 9px; padding: 3px 9px; transform: rotate(-4deg); margin-left: 8px; vertical-align: middle; }
+  .dots { display: flex; gap: 8px; margin-top: 16px; }
+  .dot { flex: 1; display: grid; gap: 6px; justify-items: center; font: 700 11px var(--font-mono); color: var(--muted); }
+  .dot i { width: 100%; max-width: 34px; aspect-ratio: 1; border-radius: 10px; border: 2px solid var(--line); background: var(--paper); }
+  .dot.on i { background: var(--hl-orange); border-color: var(--ink); }
+  .dot.today { color: var(--ink); }
+  .dot.today i { outline: 2px dashed var(--ink); outline-offset: 2px; }
+  .week { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 18px; }
+  .week div b { display: block; font: 800 30px/1 var(--font-display); letter-spacing: -0.035em; }
+  .week div small { color: var(--muted); font-size: 13.5px; font-weight: 600; }
+  .spark { display: flex; align-items: flex-end; gap: 6px; height: 56px; margin-top: 18px; }
+  .spark span { flex: 1; background: var(--hl-blue); border: 2px solid var(--ink); border-radius: 6px 6px 3px 3px; min-height: 4px; position: relative; }
+  .spark span.zero { background: var(--paper-2); border-color: var(--line); }
+  .spark-l { display: flex; gap: 6px; margin-top: 6px; }
+  .spark-l span { flex: 1; text-align: center; font: 700 11px var(--font-mono); color: var(--muted); }
+
+  /* subjects + recent */
+  .lower { display: grid; grid-template-columns: 1.5fr 1fr; gap: 18px; }
+  @media (max-width: 960px) { .lower { grid-template-columns: 1fr; } }
+  .subs { display: grid; gap: 12px; }
+  .sub { display: grid; grid-template-columns: 14px 1fr auto; gap: 14px; align-items: center; text-decoration: none; color: var(--ink); padding: 14px 16px; border: 2px solid var(--line); border-radius: 16px; background: var(--paper); }
+  .sub:hover { border-color: var(--ink); }
+  .sub > i { width: 14px; height: 40px; border-radius: 6px; background: var(--c); border: 2px solid var(--ink); }
+  .sub b { font-size: 16.5px; display: block; }
+  .sub small { color: var(--muted); font-size: 13.5px; }
+  .sub .mini { height: 8px; border-radius: 99px; background: var(--paper-2); margin-top: 8px; overflow: hidden; }
+  .sub .mini span { display: block; height: 100%; background: var(--c); }
+  .sub .lvl { text-align: right; font: 800 22px/1 var(--font-display); letter-spacing: -0.03em; }
+  .sub .lvl small { display: block; font: 600 11.5px var(--font-body); letter-spacing: 0; color: var(--muted); margin-top: 3px; }
+  .recent { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .recent a { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; padding: 10px 12px; border-radius: 12px; text-decoration: none; color: var(--ink); }
+  .recent a:hover { background: var(--paper-2); }
+  .recent b { font-size: 15px; font-weight: 600; line-height: 1.3; }
+  .recent small { grid-column: 1; color: var(--muted); font-size: 13px; }
+  .recent .sc { grid-row: span 2; align-self: center; font: 800 18px var(--font-display); }
+  .recent .sc.m { color: var(--good); }
+  .milestone { margin-top: 18px; padding: 16px; border-radius: 16px; border: 2px dashed var(--line); display: flex; gap: 14px; align-items: center; }
+  .milestone .badge { flex: none; width: 46px; height: 46px; border-radius: 14px; border: 2px solid var(--ink); background: var(--hl-yellow); display: grid; place-items: center; font: 800 15px var(--font-display); color: #141414; }
+  .milestone p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+  .empty { padding: 18px; border-radius: 16px; background: var(--paper); color: var(--ink-2); font-size: 15px; }
+  .empty .hand { font-size: 22px; color: var(--muted); display: block; }
+</style>
+<script src="js/config.js"></script>
+<script src="js/sync.js"></script>
+</head>
+<body class="app">
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="bar">
+      <a class="brand" href="index.html" aria-label="Lamplight home">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 14 16 4l8 10Z" fill="var(--hl-yellow)" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><path d="M11 17 5 29h22l-6-12Z" fill="var(--hl-yellow)" opacity=".45"/><circle cx="16" cy="15.5" r="2" fill="var(--ink)"/></svg>
+        Lamplight
+      </a>
+      <nav class="navlinks" aria-label="Main">
+        <a href="dashboard.html" data-nav="home" aria-current="page">Home</a>
+        <a href="subject.html" data-nav="learning">Learning</a>
+        <a href="diagnostic.html">Diagnostic</a>
+        <a href="analytics.html">Analytics</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn" type="button" id="lights" aria-label="Turn lights off" title="Lights off">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
+        </button>
+        <a class="avatar" href="account.html" aria-label="Your account">S</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+  <section class="hello">
+    <div>
+      <span class="hand" id="when">tonight</span>
+      <h1 id="hi">Evening.</h1>
+      <p id="lede"></p>
+    </div>
+    <div class="actions">
+      <a class="btn btn-yellow" id="goBtn" href="practice.html">Start tonight</a>
+      <a class="btn" href="diagnostic.html">Diagnostic</a>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h"><h2>Tonight's three</h2><a href="recommendations.html">See everything for you</a></div>
+    <div class="three" id="three"></div>
+  </section>
+
+  <section class="stats">
+    <div class="card" id="goalCard"></div>
+    <div class="card" id="streakCard"></div>
+    <div class="card" id="weekCard"></div>
+  </section>
+
+  <section class="sec lower">
+    <div class="card">
+      <div class="sec-h" style="margin-bottom:12px"><h2 style="font-size:26px">Your subjects</h2><a href="subject.html">All subjects</a></div>
+      <div class="subs" id="subs"></div>
+    </div>
+    <div class="card">
+      <p class="label">Recently practised</p>
+      <ul class="recent" id="recent"></ul>
+      <div class="milestone" id="milestone"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="pagefoot"><div class="wrap">Everything here comes from your own practice, saved to your account.</div></footer>
+
+<script src="data/units.js"></script>
+<script src="js/banks.js"></script>
+<script src="js/account.js"></script>
+<script src="js/diag-core.js"></script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const UNITS = window.LAMPLIGHT_UNITS || {};
+  const D = window.LamplightDiag;
+  const L = window.Lamplight || {};
+  const DAY = 86400000;
+
+  const read = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } };
+  const profile = (L.profile && L.profile()) || {};
+  const PR = (L.progress && L.progress()) || {};
+  const LOG = read('lamplight:log', []).filter(x => x && x.t && x.s);
+  const allSubs = (L.subjects ? L.subjects() : read('lamplight:subjects', [])).filter(s => UNITS[s.code || s.id]);
+  let subs = allSubs.filter(s => !s.done); if (!subs.length) subs = allSubs;
+  const goal = +profile.goal || 20;
+  const first = String(profile.name || '').trim().split(/\s+/)[0];
+
+  /* skills, in order, for each current subject */
+  const skillIndex = {};
+  subs.forEach(s => { const U = UNITS[s.code || s.id]; U.weekList.forEach(w => w.skills.forEach(k => { skillIndex[k.id] = { k, w, U, s }; })); });
+  const allIndex = {};
+  allSubs.forEach(s => { const U = UNITS[s.code || s.id]; U.weekList.forEach(w => w.skills.forEach(k => { allIndex[k.id] = { k, w, U, s }; })); });
+
+  const dayKey = t => { const d = new Date(t); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
+  const startOfDay = t => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
+  const now = Date.now(), today = startOfDay(now);
+  const ago = t => {
+    const m = Math.round((now - t) / 60000);
+    if (m < 2) return 'just now'; if (m < 60) return m + ' min ago';
+    const h = Math.round(m / 60); if (t >= today) return h + ' h ago';
+    if (t >= today - DAY) return 'yesterday';
+    const d = Math.round((today - startOfDay(t)) / DAY); return d < 7 ? d + ' days ago' : new Date(t).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
+  };
+  const score = id => (PR[id] && PR[id].score) || 0;
+  const skCode = k => { const p = k.id.split('-'); return p[0] + ' ' + p[1]; };
+
+  /* ---------- greeting ---------- */
+  const hr = new Date().getHours();
+  const part = hr < 5 ? 'Late night' : hr < 12 ? 'Morning' : hr < 17 ? 'Afternoon' : 'Evening';
+  $('#hi').textContent = part + (first ? ', ' + first : '') + '.';
+  $('#when').textContent = new Date().toLocaleDateString('en-AU', { weekday: 'long' }).toLowerCase() + (hr >= 17 || hr < 5 ? ' night' : '');
+  const av = document.querySelector('a.avatar'); if (av && first) av.textContent = first[0].toUpperCase();
+  const doneToday = LOG.filter(x => x.t >= today).length;
+  const left = Math.max(0, goal - doneToday);
+  let lights = '';
+  if (profile.lightsAt) { const [h, m] = profile.lightsAt.split(':').map(Number); const d = new Date(); d.setHours(h, m || 0, 0, 0); lights = 'Lights go down at ' + d.toLocaleTimeString('en-AU', { hour: 'numeric', minute: m ? '2-digit' : undefined }).replace(':00', '') + '. '; }
+  $('#lede').textContent = !subs.length ? 'Add a subject to get started. Lamplight builds your nights around it.'
+    : left === 0 ? 'Goal done for today. Anything more is a bonus, or call it a night.'
+    : lights + (doneToday ? left + ' more questions and today\'s goal is done.' : goal + ' questions and you\'re done for the night.');
+
+  /* ---------- tonight's three ---------- */
+  const picks = [], used = new Set();
+  const add = (id, reason, why) => { if (!id || used.has(id) || !skillIndex[id]) return false; used.add(id); picks.push({ id, reason, why }); return true; };
+
+  /* 0. the nearest exam plan comes first */
+  const plans = read('lamplight:plans', []).filter(p => p.date && skillIndex && UNITS[p.code]);
+  const upcoming = plans.map(p => { const [y, m, dd] = p.date.split('-').map(Number); return { p, at: new Date(y, m - 1, dd).getTime() }; }).filter(x => x.at > today).sort((a, b) => a.at - b.at)[0];
+  if (upcoming) {
+    const U = UNITS[upcoming.p.code], left = Math.round((upcoming.at - today) / DAY);
+    for (const w of U.weekList) { if (!upcoming.p.weeks.includes(w.week)) continue; const k = w.skills.find(k => score(k.id) < 100); if (k) { add(k.id, 'Exam plan', 'On your plan for ' + upcoming.p.title + '. ' + left + ' day' + (left === 1 ? '' : 's') + ' to go.'); break; } }
+  }
+  /* 1. pick up where you left off */
+  for (let i = LOG.length - 1; i >= 0 && picks.length < 1; i--) {
+    const id = LOG[i].s; if (skillIndex[id] && score(id) < 100) add(id, 'Pick up', 'You were on this ' + ago(LOG[i].t) + '. SmartScore ' + score(id) + ', keep it moving.');
+  }
+  /* 2. weakest week, from the diagnostic and practice */
+  if (D && D.weekLevel) {
+    let worst = null;
+    subs.forEach(s => { const U = UNITS[s.code || s.id]; U.weekList.forEach(w => { const lv = D.weekLevel(U.code, w.week); if (lv.v != null && (!worst || lv.v < worst.v)) worst = { v: lv.v, U, w }; }); });
+    if (worst) { const r = D.recSkills(worst.U.code, worst.w.week, 4).find(x => !used.has(x.k.id)); if (r) add(r.k.id, 'Weakest week', 'Week ' + worst.w.week + ' is your weakest week in ' + worst.U.code + ' right now.'); }
+  }
+  /* 3. next new skill, taking turns between subjects */
+  const nextNew = s => { const U = UNITS[s.code || s.id]; for (const w of U.weekList) for (const k of w.skills) if (!(PR[k.id] && PR[k.id].answered) && !used.has(k.id)) return { k, w }; return null; };
+  const order = subs.slice().sort((a, b) => picks.filter(p => skillIndex[p.id].s === a).length - picks.filter(p => skillIndex[p.id].s === b).length);
+  for (const s of order) { if (picks.length >= 3) break; const n = nextNew(s); if (n) add(n.k.id, 'Next up', 'Next new skill in Week ' + n.w.week + ': ' + n.w.topic + '.'); }
+  /* 4. keep mastered skills fresh */
+  Object.keys(PR).filter(id => skillIndex[id] && PR[id].score >= 100 && PR[id].last && now - PR[id].last > 7 * DAY)
+    .sort((a, b) => PR[a].last - PR[b].last).forEach(id => { if (picks.length < 3) add(id, 'Keep it fresh', 'Mastered ' + ago(PR[id].last) + '. A quick round keeps it.'); });
+  /* 5. anything else that isn't mastered yet */
+  Object.keys(skillIndex).sort((a, b) => score(a) - score(b)).forEach(id => { if (picks.length < 3 && score(id) < 100) add(id, 'Worth a go', 'SmartScore ' + score(id) + '. A few questions will lift it.'); });
+
+  const ring = s => { const C = 2 * Math.PI * 17, off = (C * (1 - s / 100)).toFixed(1); return '<svg class="ring" viewBox="0 0 44 44" aria-hidden="true"><circle class="track" cx="22" cy="22" r="17" fill="none" stroke-width="5"/><circle class="fill" cx="22" cy="22" r="17" fill="none" stroke-width="5" stroke-linecap="round" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + off + '"/></svg>'; };
+  const mins = s => Math.max(3, Math.round(2 + (100 - s) / 100 * 8));
+  $('#three').innerHTML = picks.length ? picks.map((p, i) => {
+    const x = skillIndex[p.id], s = score(p.id);
+    return '<a class="pick" href="practice.html#' + encodeURIComponent(p.id) + '" style="--c:' + x.s.colour + '">' +
+      '<span class="num">' + (i + 1) + '</span>' +
+      '<div class="tags"><span class="tag">' + esc(p.reason) + '</span><span class="code">' + esc(skCode(x.k)) + '</span></div>' +
+      '<h3>' + esc(x.k.name) + '</h3><p class="why">' + esc(p.why) + '</p>' +
+      '<div class="foot"><span class="ringwrap">' + ring(s) + '<span><b>' + s + '</b><br>Smart<br>Score</span></span><span class="mins">about ' + mins(s) + ' min</span><span class="btn btn-yellow btn-small">Start</span></div></a>';
+  }).join('') : '<div class="empty"><span class="hand">nothing to practise yet</span>Add a subject and upload a week, and tonight\'s three will show up here.</div>';
+  if (picks[0]) $('#goBtn').href = 'practice.html#' + encodeURIComponent(picks[0].id);
+
+  /* ---------- goal ---------- */
+  const pct = Math.min(100, Math.round(doneToday / goal * 100));
+  $('#goalCard').innerHTML = '<p class="label">Tonight\'s goal</p><div class="big">' + doneToday + '<small> / ' + goal + ' questions</small>' + (left === 0 ? '<span class="done-stamp">DONE</span>' : '') + '</div>' +
+    '<div class="gbar" role="progressbar" aria-valuemin="0" aria-valuemax="' + goal + '" aria-valuenow="' + doneToday + '"><i style="width: 0%"></i></div>' +
+    '<p class="note">' + (left === 0 ? 'You hit your goal. Nice work.' : doneToday ? left + ' to go. That\'s about ' + Math.max(1, Math.round(left * 0.5)) + ' minutes.' : 'Small goals actually get done. Start with one skill.') + '</p>';
+  requestAnimationFrame(() => setTimeout(() => { const b = $('#goalCard .gbar i'); if (b) b.style.width = pct + '%'; }, 60));
+
+  /* ---------- streak ---------- */
+  const days = new Set(LOG.map(x => dayKey(x.t)));
+  let streak = 0, d = days.has(dayKey(now)) ? today : today - DAY;
+  while (days.has(dayKey(d))) { streak++; d -= DAY; }
+  const last7 = []; for (let i = 6; i >= 0; i--) last7.push(today - i * DAY);
+  const wd = t => new Date(t).toLocaleDateString('en-AU', { weekday: 'narrow' });
+  $('#streakCard').innerHTML = '<p class="label">Streak</p><div class="big">' + streak + '<small> night' + (streak === 1 ? '' : 's') + '</small></div>' +
+    '<div class="dots">' + last7.map(t => '<div class="dot' + (days.has(dayKey(t)) ? ' on' : '') + (t === today ? ' today' : '') + '"><i></i>' + wd(t) + '</div>').join('') + '</div>' +
+    '<p class="note">' + (streak && !days.has(dayKey(now)) ? 'Answer one question tonight to keep it going.' : streak ? 'Keep it going tomorrow night.' : 'One question tonight starts a streak.') + '</p>';
+
+  /* ---------- this week ---------- */
+  const wk = LOG.filter(x => x.t >= today - 6 * DAY);
+  const perDay = last7.map(t => wk.filter(x => x.t >= t && x.t < t + DAY).length);
+  let secs = 0; const sorted = wk.slice().sort((a, b) => a.t - b.t);
+  sorted.forEach((x, i) => { const gap = i ? x.t - sorted[i - 1].t : Infinity; secs += gap < 5 * 60000 ? gap / 1000 : 30; });
+  const right = wk.filter(x => x.ok).length;
+  const max = Math.max(1, ...perDay);
+  $('#weekCard').innerHTML = '<p class="label">Last 7 days</p><div class="week">' +
+    '<div><b>' + wk.length + '</b><small>questions</small></div>' +
+    '<div><b>' + Math.round(secs / 60) + '</b><small>minutes, roughly</small></div>' +
+    '<div><b>' + new Set(wk.map(x => x.s)).size + '</b><small>skills practised</small></div>' +
+    '<div><b>' + (wk.length ? Math.round(right / wk.length * 100) + '%' : '0%') + '</b><small>right first go</small></div></div>' +
+    '<div class="spark" aria-label="Questions per day">' + perDay.map(n => '<span' + (n ? '' : ' class="zero"') + ' style="height:' + (n ? Math.max(10, n / max * 100) : 8) + '%" title="' + n + ' questions"></span>').join('') + '</div>' +
+    '<div class="spark-l">' + last7.map(t => '<span>' + wd(t) + '</span>').join('') + '</div>';
+
+  /* ---------- subjects ---------- */
+  $('#subs').innerHTML = allSubs.length ? allSubs.slice().sort((a, b) => (a.done ? 1 : 0) - (b.done ? 1 : 0)).map(s => {
+    const U = UNITS[s.code || s.id], sk = U.weekList.flatMap(w => w.skills);
+    const mastered = sk.filter(k => score(k.id) >= 100).length, started = sk.filter(k => PR[k.id] && PR[k.id].answered).length;
+    const lv = D && D.weekLevel ? U.weekList.map(w => D.weekLevel(U.code, w.week).v).filter(v => v != null) : [];
+    const avg = lv.length ? Math.round(lv.reduce((a, b) => a + b, 0) / lv.length) : null;
+    return '<a class="sub" href="subject.html#' + encodeURIComponent(s.id) + '" style="--c:' + s.colour + '"><i></i><div><b>' + esc(U.name) + '</b>' +
+      '<small>' + esc(U.code) + (s.done ? ' · done' : '') + ' · ' + mastered + ' of ' + sk.length + ' skills mastered' + (started > mastered ? ', ' + (started - mastered) + ' in progress' : '') + '</small>' +
+      '<div class="mini"><span style="width:' + Math.round(mastered / sk.length * 100) + '%"></span></div></div>' +
+      '<div class="lvl">' + (avg != null ? avg + '<small>level</small>' : '<small>no level yet</small>') + '</div></a>';
+  }).join('') : '<div class="empty"><span class="hand">no subjects yet</span><a href="subject.html">Add your first subject</a> to fill this in.</div>';
+
+  /* ---------- recent + milestone ---------- */
+  const seen = new Set(), rec = [];
+  for (let i = LOG.length - 1; i >= 0 && rec.length < 6; i--) { const x = LOG[i]; if (!seen.has(x.s) && allIndex[x.s]) { seen.add(x.s); rec.push(x); } }
+  $('#recent').innerHTML = rec.length ? rec.map(x => { const k = allIndex[x.s].k, s = score(x.s);
+    return '<li><a href="practice.html#' + encodeURIComponent(x.s) + '"><b>' + esc(k.name) + '</b><span class="sc' + (s >= 100 ? ' m' : '') + '">' + s + '</span><small>' + esc(skCode(k)) + ' · ' + ago(x.t) + '</small></a></li>'; }).join('')
+    : '<li class="empty"><span class="hand">nothing yet</span>Skills you practise show up here.</li>';
+  const total = Object.values(PR).reduce((a, p) => a + (p.answered || 0), 0);
+  const steps = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000];
+  const next = steps.find(n => n > total) || total + 1000;
+  $('#milestone').innerHTML = '<span class="badge">' + (next >= 1000 ? next / 1000 + 'k' : next) + '</span><p><b>' + (next - total) + ' questions</b> to your next milestone. You\'ve answered ' + total + ' so far.</p>';
+
+  /* lights */
+  $('#lights').addEventListener('click', () => {
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (dark) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', 'dark');
+  });
+})();
+</script>
+<script src="js/tour.js"></script>
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Skill plans · Lamplight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Caveat:wght@600;700&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/lamplight.css">
+<style>
+  .navlinks a[aria-current="page"] { background: var(--hl-yellow); color: #141414; }
+  .avatar { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--ink); background: var(--hl-pink); color: #141414; display: grid; place-items: center; font: 800 17px var(--font-display); text-decoration: none; box-shadow: 0 3px 0 var(--shadow); }
+  .icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--line); background: var(--card); display: grid; place-items: center; cursor: pointer; color: var(--ink); }
+  .pagefoot { margin-top: 80px; border-top: 2px solid var(--ink); padding-block: 24px 40px; color: var(--muted); font-size: 14px; }
+
+  .top { margin-top: 34px; display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+  .top .hand { font-size: 26px; color: var(--muted); transform: rotate(-2deg); display: inline-block; }
+  .top h1 { font-size: clamp(42px, 6.5vw, 80px); letter-spacing: -0.045em; margin-top: 4px; }
+  .top p { margin: 10px 0 0; font-size: 17.5px; color: var(--ink-2); max-width: 34em; }
+
+  .card { background: var(--card); border: 2.5px solid var(--ink); border-radius: 24px; box-shadow: 0 6px 0 var(--shadow); padding: 26px; }
+  .label { font: 700 12px var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+
+  /* plan tabs */
+  .ptabs { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 28px; }
+  .ptab { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 12px; border: 2px solid var(--line); background: var(--card); font-weight: 700; font-size: 14.5px; cursor: pointer; color: var(--ink-2); }
+  .ptab i { width: 11px; height: 11px; border-radius: 4px; background: var(--c); border: 1.5px solid var(--ink); }
+  .ptab small { font: 700 11.5px var(--font-mono); color: var(--muted); }
+  .ptab[aria-pressed="true"] { border-color: var(--ink); color: var(--ink); box-shadow: 0 3px 0 var(--shadow); }
+  .ptab.new { border-style: dashed; color: var(--muted); }
+
+  /* form */
+  .form { margin-top: 24px; display: grid; gap: 22px; }
+  .form h2 { font-size: 30px; letter-spacing: -0.035em; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } }
+  .field select, .field input[type="date"], .field input[type="number"] { font: 600 16.5px var(--font-body); padding: 12px 14px; border-radius: 12px; border: 2px solid var(--line); background: var(--paper); color: var(--ink); width: 100%; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .wk { text-align: left; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--line); background: var(--paper); cursor: pointer; display: grid; gap: 1px; min-width: 0; max-width: 220px; color: var(--ink); }
+  .wk b { font: 800 14px var(--font-display); }
+  .wk small { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wk[aria-pressed="true"] { border-color: var(--ink); background: var(--c); color: #141414; box-shadow: 0 3px 0 var(--shadow); }
+  .wk[aria-pressed="true"] small { color: #3A3A37; }
+  .day { min-width: 54px; padding: 0 8px; height: 42px; border-radius: 11px; border: 2px solid var(--line); background: var(--paper); font-weight: 700; cursor: pointer; color: var(--ink); }
+  .day[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+  .linkish { border: 0; background: none; padding: 0; font: 600 14px var(--font-body); color: var(--ink-2); text-decoration: underline; cursor: pointer; }
+  .err { margin: 0; color: var(--bad); font-weight: 600; font-size: 14.5px; }
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+  /* plan view */
+  .pv { margin-top: 24px; display: grid; gap: 22px; }
+  .hero { display: grid; grid-template-columns: 1.3fr 1fr; gap: 22px; }
+  @media (max-width: 900px) { .hero { grid-template-columns: 1fr; } }
+  .count { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .count b { font: 800 84px/0.9 var(--font-display); letter-spacing: -0.05em; }
+  .count span { font: 800 26px var(--font-display); color: var(--muted); letter-spacing: -0.02em; }
+  .ptitle { font-size: 28px; letter-spacing: -0.03em; margin-top: 14px; }
+  .meta { color: var(--ink-2); font-size: 15px; margin: 6px 0 0; }
+  .gbar { height: 18px; border-radius: 99px; border: 2px solid var(--ink); background: var(--paper); overflow: hidden; margin-top: 18px; }
+  .gbar i { display: block; height: 100%; background: var(--c); }
+  .pace { display: inline-block; margin-top: 14px; font: 700 13px var(--font-body); padding: 5px 11px; border-radius: 99px; border: 2px solid currentColor; }
+  .pace.ok { color: var(--good); background: var(--good-soft); }
+  .pace.tight { color: var(--bad); background: var(--bad-soft); }
+  .tight-box { margin-top: 14px; padding: 14px 16px; border-radius: 14px; background: var(--bad-soft); color: var(--ink); font-size: 15px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .tonight h3 { font-size: 24px; letter-spacing: -0.03em; }
+  .tlist { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 10px; }
+  .tlist a { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; align-items: center; padding: 12px 14px; border-radius: 14px; border: 2px solid var(--line); background: var(--paper); text-decoration: none; color: var(--ink); }
+  .tlist a:hover { border-color: var(--ink); }
+  .tlist b { font-size: 15.5px; line-height: 1.3; }
+  .tlist small { grid-column: 1; color: var(--muted); font-size: 13px; }
+  .tlist .q { text-decoration: none; grid-row: span 2; font: 800 15px var(--font-display); background: var(--c); color: #141414; border: 2px solid var(--ink); border-radius: 10px; padding: 4px 9px; }
+  .rest { padding: 18px; border-radius: 16px; background: var(--paper); color: var(--ink-2); margin-top: 14px; }
+  .rest .hand { font-size: 22px; color: var(--muted); display: block; }
+
+  .nights h2 { font-size: 26px; letter-spacing: -0.03em; margin-bottom: 14px; }
+  .night { display: grid; grid-template-columns: 92px 1fr auto; gap: 16px; align-items: start; padding: 14px 0; border-top: 2px solid var(--paper-2); }
+  .night:first-of-type { border-top: 0; }
+  .night .d { font: 800 18px/1.05 var(--font-display); letter-spacing: -0.02em; }
+  .night .d small { display: block; font: 600 12.5px var(--font-body); color: var(--muted); letter-spacing: 0; margin-top: 3px; }
+  .night.today .d { background: var(--hl-yellow); color: #141414; border-radius: 10px; padding: 6px 8px; border: 2px solid var(--ink); justify-self: start; }
+  .night.today .d small { color: #3A3A37; }
+  .night .sk { display: flex; gap: 6px; flex-wrap: wrap; }
+  .night .sk a { font-size: 13.5px; font-weight: 600; text-decoration: none; padding: 5px 10px; border-radius: 9px; border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); max-width: 100%; }
+  .night .sk a:hover { border-color: var(--ink); }
+  .night .sk a.cont { border-style: dashed; color: var(--ink-2); }
+  .night .sk .rv { font-size: 13.5px; font-weight: 700; padding: 5px 10px; border-radius: 9px; background: var(--hl-green); color: #141414; border: 1.5px solid var(--ink); text-decoration: none; }
+  .night .n { font: 700 12.5px var(--font-mono); color: var(--muted); white-space: nowrap; padding-top: 4px; }
+  @media (max-width: 600px) { .night { grid-template-columns: 70px 1fr; } .night .n { grid-column: 2; padding: 0; } }
+  .more { margin-top: 10px; }
+  .danger { color: var(--bad); }
+  .empty { padding: 24px; border-radius: 18px; background: var(--paper); color: var(--ink-2); }
+  .empty .hand { font-size: 24px; color: var(--muted); display: block; }
+</style>
+<script src="js/config.js"></script>
+<script src="js/sync.js"></script>
+</head>
+<body class="app">
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="bar">
+      <a class="brand" href="index.html" aria-label="Lamplight home">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 14 16 4l8 10Z" fill="var(--hl-yellow)" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><path d="M11 17 5 29h22l-6-12Z" fill="var(--hl-yellow)" opacity=".45"/><circle cx="16" cy="15.5" r="2" fill="var(--ink)"/></svg>
+        Lamplight
+      </a>
+      <nav class="navlinks" aria-label="Main">
+        <a href="dashboard.html" data-nav="home">Home</a>
+        <a href="subject.html" data-nav="learning" aria-current="page">Learning</a>
+        <a href="diagnostic.html">Diagnostic</a>
+        <a href="analytics.html">Analytics</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn" type="button" id="lights" aria-label="Turn lights off" title="Lights off">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
+        </button>
+        <a class="avatar" href="account.html" aria-label="Your account">S</a>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="subnav" id="subnav" data-current="plans"></div>
+
+<main class="wrap" id="main">
+  <section class="top">
+    <div>
+      <span class="hand">exam coming up?</span>
+      <h1>Skill plans</h1>
+      <p>Pick the weeks your exam covers and the date. Lamplight spreads the skills you haven't mastered across your study nights, and re-plans every night from what you've actually done.</p>
+    </div>
+  </section>
+  <div class="ptabs" id="tabs"></div>
+  <div id="view"></div>
+</main>
+
+<footer class="pagefoot"><div class="wrap">Plans re-shuffle themselves each night. Master a skill early and it drops off the list.</div></footer>
+
+<script src="data/units.js"></script>
+<script src="js/banks.js"></script>
+<script src="js/account.js"></script>
+<script src="js/subnav.js"></script>
+<script src="js/diag-core.js"></script>
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const UNITS = window.LAMPLIGHT_UNITS || {};
+  const L = window.Lamplight || {};
+  const KEY = 'lamplight:plans', DAY = 86400000;
+  const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } };
+  const save = p => { try { localStorage.setItem(KEY, JSON.stringify(p)); } catch (e) {} };
+  const PR = () => (L.progress && L.progress()) || {};
+  const profile = (L.profile && L.profile()) || {};
+  const subs = () => (L.subjects ? L.subjects() : []).filter(s => UNITS[s.code || s.id]);
+  const subFor = code => subs().find(s => (s.code || s.id) === code) || { colour: 'var(--hl-yellow)', id: code };
+  const startOfDay = t => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
+  const parseDate = v => { const [y, m, d] = v.split('-').map(Number); return new Date(y, m - 1, d).getTime(); };
+  const fmt = (t, o) => new Date(t).toLocaleDateString('en-AU', o || { weekday: 'short', day: 'numeric', month: 'short' });
+  const dow = t => (new Date(t).getDay() + 6) % 7; /* Mon = 0 */
+  const need = s => s >= 100 ? 0 : Math.max(4, Math.round((100 - s) / 100 * 14));
+
+  let plans = load(), cur = plans.length ? plans[0].id : 'new', draft = null, err = '', showAll = false, confirmDel = false;
+
+  /* ---------- the plan itself, worked out fresh every time ---------- */
+  function schedule(p) {
+    const U = UNITS[p.code], pr = PR(), today = startOfDay(Date.now()), exam = parseDate(p.date);
+    const skills = U.weekList.filter(w => p.weeks.includes(w.week)).flatMap(w => w.skills.map(k => ({ k, w })));
+    const total = skills.length, mastered = skills.filter(x => (pr[x.k.id] || {}).score >= 100).length;
+    const todo = skills.filter(x => ((pr[x.k.id] || {}).score || 0) < 100).map(x => ({ ...x, need: need((pr[x.k.id] || {}).score || 0), score: (pr[x.k.id] || {}).score || 0 }));
+    const nights = [];
+    for (let t = today; t < exam; t += DAY) if (p.days.includes(dow(t))) nights.push({ t, items: [], q: 0 });
+    const demand = todo.reduce((a, x) => a + x.need, 0);
+    const review = nights.length >= 3 ? nights[nights.length - 1] : null;
+    if (review) review.review = true;
+    const work = nights.filter(n => !n.review);
+    const cap = work.length * p.perNight;
+    let ni = 0;
+    for (const x of todo) {
+      let left = x.need, first = true;
+      while (left > 0 && ni < work.length) {
+        const n = work[ni], room = p.perNight - n.q;
+        if (room <= 0) { ni++; continue; }
+        const take = Math.min(room, left);
+        n.items.push({ x, q: take, cont: !first }); n.q += take; left -= take; first = false;
+        if (n.q >= p.perNight) ni++;
+      }
+      if (left > 0) x.unplaced = left;
+    }
+    /* light review of mastered skills every fourth night, if there's room */
+    const fresh = skills.filter(x => (pr[x.k.id] || {}).score >= 100);
+    work.forEach((n, i) => { if (fresh.length && i % 4 === 3 && n.q < p.perNight) n.fresh = fresh[(i / 4 | 0) % fresh.length]; });
+    const daysLeft = Math.round((exam - today) / DAY);
+    return { U, skills, total, mastered, todo, nights, demand, cap, daysLeft, tight: demand > cap, perNightNeeded: work.length ? Math.ceil(demand / work.length) : demand };
+  }
+
+  /* ---------- tabs ---------- */
+  function tabs() {
+    $('#tabs').innerHTML = plans.map(p => { const s = subFor(p.code);
+      return '<button class="ptab" type="button" data-id="' + esc(p.id) + '" aria-pressed="' + (cur === p.id) + '" style="--c:' + s.colour + '"><i></i>' + esc(p.title) + ' <small>' + esc(p.code) + '</small></button>'; }).join('') +
+      '<button class="ptab new" type="button" data-id="new" aria-pressed="' + (cur === 'new') + '">+ New plan</button>';
+  }
+  $('#tabs').addEventListener('click', e => { const b = e.target.closest('.ptab'); if (!b) return; cur = b.dataset.id; draft = null; err = ''; showAll = false; confirmDel = false; render(); });
+
+  /* ---------- new plan form ---------- */
+  function form() {
+    const list = subs().filter(s => !s.done); const pool = list.length ? list : subs();
+    if (!pool.length) return '<div class="card form"><div class="empty"><span class="hand">no subjects yet</span>Add a subject with uploaded weeks first, then come back to plan for its exam.</div></div>';
+    if (!draft) { const s = pool[0]; const d = new Date(Date.now() + 14 * DAY);
+      draft = { code: s.code || s.id, weeks: UNITS[s.code || s.id].weekList.map(w => w.week), date: d.toISOString().slice(0, 10), days: [0, 1, 2, 3, 4, 5, 6], perNight: +profile.goal || 20, title: '' }; }
+    const U = UNITS[draft.code], sc = subFor(draft.code).colour;
+    const minDate = new Date(Date.now() + DAY).toISOString().slice(0, 10);
+    return '<form class="card form" id="pf" novalidate style="--c:' + sc + '">' +
+      '<div><span class="label">new plan</span><h2>What are you studying for?</h2></div>' +
+      '<div class="grid2">' +
+        '<label class="field"><span>Subject</span><select id="fSub">' + pool.map(s => '<option value="' + esc(s.code || s.id) + '"' + ((s.code || s.id) === draft.code ? ' selected' : '') + '>' + esc(UNITS[s.code || s.id].name) + ' (' + esc(s.code || s.id) + ')</option>').join('') + '</select></label>' +
+        '<label class="field"><span>Name it <em>(optional)</em></span><input id="fTitle" maxlength="40" placeholder="e.g. Mid-trimester exam" value="' + esc(draft.title) + '"></label>' +
+        '<label class="field"><span>Exam or due date</span><input type="date" id="fDate" min="' + minDate + '" value="' + esc(draft.date) + '"></label>' +
+        '<label class="field"><span>Questions a night</span><input type="number" id="fPer" min="5" max="100" step="5" value="' + draft.perNight + '"></label>' +
+      '</div>' +
+      '<div class="field"><span>Which weeks does it cover? <button type="button" class="linkish" id="fAll">' + (draft.weeks.length === U.weekList.length ? 'Clear all' : 'Select all') + '</button></span><div class="chips" id="fWeeks">' +
+        U.weekList.map(w => '<button type="button" class="wk" data-w="' + w.week + '" aria-pressed="' + draft.weeks.includes(w.week) + '"><b>Week ' + w.week + '</b><small>' + esc(w.topic) + '</small></button>').join('') + '</div></div>' +
+      '<div class="field"><span>Which nights can you study?</span><div class="chips" id="fDays">' + DAYS.map((d, i) => '<button type="button" class="day" data-d="' + i + '" aria-pressed="' + draft.days.includes(i) + '">' + d + '</button>').join('') + '</div></div>' +
+      (err ? '<p class="err">' + esc(err) + '</p>' : '') +
+      '<div class="actions"><button type="submit" class="btn btn-yellow">Make my plan</button>' + (plans.length ? '<button type="button" class="btn" id="fCancel">Cancel</button>' : '') + '</div>' +
+    '</form>';
+  }
+  function wireForm() {
+    const f = $('#pf'); if (!f) return;
+    const keep = () => { draft.title = $('#fTitle').value; draft.date = $('#fDate').value; draft.perNight = +$('#fPer').value || draft.perNight; };
+    $('#fSub').onchange = e => { keep(); draft.code = e.target.value; draft.weeks = UNITS[draft.code].weekList.map(w => w.week); render(); };
+    $('#fWeeks').onclick = e => { const b = e.target.closest('.wk'); if (!b) return; keep(); const w = +b.dataset.w; draft.weeks = draft.weeks.includes(w) ? draft.weeks.filter(x => x !== w) : draft.weeks.concat(w).sort((a, b) => a - b); render(); };
+    $('#fAll').onclick = () => { keep(); const U = UNITS[draft.code]; draft.weeks = draft.weeks.length === U.weekList.length ? [] : U.weekList.map(w => w.week); render(); };
+    $('#fDays').onclick = e => { const b = e.target.closest('.day'); if (!b) return; keep(); const d = +b.dataset.d; draft.days = draft.days.includes(d) ? draft.days.filter(x => x !== d) : draft.days.concat(d).sort(); render(); };
+    if ($('#fCancel')) $('#fCancel').onclick = () => { cur = plans[0].id; draft = null; err = ''; render(); };
+    f.onsubmit = e => {
+      e.preventDefault(); keep();
+      if (!draft.weeks.length) { err = 'Pick at least one week.'; return render(); }
+      if (!draft.date || parseDate(draft.date) <= startOfDay(Date.now())) { err = 'Pick a date after today.'; return render(); }
+      if (!draft.days.length) { err = 'Pick at least one night you can study.'; return render(); }
+      const p = { id: 'p' + Date.now().toString(36), title: draft.title.trim() || ('Exam on ' + fmt(parseDate(draft.date), { day: 'numeric', month: 'short' })), code: draft.code, weeks: draft.weeks, date: draft.date, days: draft.days, perNight: Math.max(5, Math.min(100, draft.perNight)), created: Date.now() };
+      plans.push(p); plans.sort((a, b) => a.date.localeCompare(b.date)); save(plans); cur = p.id; draft = null; err = ''; render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+  }
+
+  /* ---------- plan view ---------- */
+  function view(p) {
+    const S = schedule(p), sc = subFor(p.code).colour, today = startOfDay(Date.now());
+    const pct = S.total ? Math.round(S.mastered / S.total * 100) : 0;
+    if (S.daysLeft <= 0) return '<div class="pv" style="--c:' + sc + '"><div class="card"><span class="label">' + esc(p.code) + '</span><h2 class="ptitle">' + esc(p.title) + '</h2><p class="meta">This date has passed. You mastered ' + S.mastered + ' of ' + S.total + ' skills in the plan.</p><div class="actions" style="margin-top:18px"><button class="btn danger" type="button" id="del">Delete this plan</button></div></div></div>';
+    const tn = S.nights[0] && S.nights[0].t === today ? S.nights[0] : null;
+    const item = it => { const s = it.x.score; return '<li><a href="practice.html#' + encodeURIComponent(it.x.k.id) + '"><b>' + esc(it.x.k.name) + '</b><span class="q">~' + it.q + ' Qs</span><small>' + esc(it.x.k.id.replace('-', ' ')) + ' · Week ' + it.x.w.week + (s ? ' · SmartScore ' + s : '') + (it.cont ? ' · keep going' : '') + '</small></a></li>'; };
+    let tonight;
+    if (!S.todo.length) tonight = '<div class="rest"><span class="hand">all mastered</span>Every skill in this plan is at 100. Use your nights to keep them fresh, or run a diagnostic.</div>';
+    else if (tn && tn.review) tonight = '<div class="rest"><span class="hand">final review</span>Last night before the exam. Run a quick diagnostic on these weeks rather than learning anything new.</div><div class="actions" style="margin-top:14px"><a class="btn btn-yellow" href="arena.html">Start review</a></div>';
+    else if (tn && tn.items.length) tonight = '<ul class="tlist">' + tn.items.map(item).join('') + '</ul>';
+    else tonight = '<div class="rest"><span class="hand">night off</span>Tonight isn\'t a study night in this plan. ' + (S.nights[0] ? 'Next one is ' + fmt(S.nights[0].t, { weekday: 'long' }) + '.' : '') + '</div>';
+
+    const nightRows = S.nights.slice(tn ? 1 : 0);
+    const shown = showAll ? nightRows : nightRows.slice(0, 7);
+    const row = n => '<div class="night' + (n.t === today ? ' today' : '') + '"><div class="d">' + fmt(n.t, { weekday: 'short' }) + '<small>' + fmt(n.t, { day: 'numeric', month: 'short' }) + '</small></div><div class="sk">' +
+      (n.review ? '<a class="rv" href="arena.html">Final review: diagnostic on these weeks</a>' :
+        n.items.length ? n.items.map(it => '<a href="practice.html#' + encodeURIComponent(it.x.k.id) + '"' + (it.cont ? ' class="cont"' : '') + ' title="' + esc(it.x.k.name) + '">' + esc(it.x.k.id.split('-')[1]) + ' ' + esc(it.x.k.name.length > 42 ? it.x.k.name.slice(0, 40) + '…' : it.x.k.name) + '</a>').join('') + (n.fresh ? '<a class="rv" href="practice.html#' + encodeURIComponent(n.fresh.k.id) + '">Refresh ' + esc(n.fresh.k.id.split('-')[1]) + '</a>' : '')
+        : '<span style="color:var(--muted);font-size:14px">' + (n.fresh ? '<a class="rv" href="practice.html#' + encodeURIComponent(n.fresh.k.id) + '">Refresh ' + esc(n.fresh.k.id.split('-')[1]) + '</a>' : 'Spare night. Catch up or rest.') + '</span>') +
+      '</div><div class="n">' + (n.review ? '' : n.q ? n.q + ' Qs' : '') + '</div></div>';
+
+    return '<div class="pv" style="--c:' + sc + '">' +
+      '<div class="hero">' +
+        '<div class="card"><div class="count"><b>' + S.daysLeft + '</b><span>day' + (S.daysLeft === 1 ? '' : 's') + ' to go</span></div>' +
+          '<h2 class="ptitle">' + esc(p.title) + '</h2>' +
+          '<p class="meta">' + esc(S.U.name) + ' · ' + fmt(parseDate(p.date), { weekday: 'long', day: 'numeric', month: 'long' }) + ' · Weeks ' + esc(p.weeks.join(', ')) + '</p>' +
+          '<div class="gbar"><i style="width:' + pct + '%"></i></div>' +
+          '<p class="meta"><b>' + S.mastered + ' of ' + S.total + '</b> skills mastered · about ' + S.demand + ' questions to go · ' + S.nights.length + ' study night' + (S.nights.length === 1 ? '' : 's') + ' left</p>' +
+          (S.tight ? '<div class="tight-box"><span>This is tight. At ' + p.perNight + ' a night you\'ll run out of nights. About <b>' + S.perNightNeeded + ' a night</b> would cover it.</span><button class="btn btn-small" type="button" id="bump">Use ' + S.perNightNeeded + ' a night</button></div>'
+            : '<span class="pace ok">On track at ' + p.perNight + ' questions a night</span>') +
+        '</div>' +
+        '<div class="card tonight"><p class="label">Tonight</p><h3>' + (tn && tn.items.length ? 'About ' + tn.q + ' questions' : 'Tonight') + '</h3>' + tonight + '</div>' +
+      '</div>' +
+      '<div class="card nights"><h2>The nights ahead</h2>' + (shown.length ? shown.map(row).join('') : '<p class="meta">No more study nights before the exam.</p>') +
+        (nightRows.length > 7 ? '<div class="more"><button class="linkish" type="button" id="all">' + (showAll ? 'Show less' : 'Show all ' + nightRows.length + ' nights') + '</button></div>' : '') +
+      '</div>' +
+      '<div class="actions">' + (confirmDel ? '<span>Delete this plan? Your progress stays.</span><button class="btn btn-small danger" type="button" id="delYes">Yes, delete</button><button class="btn btn-small" type="button" id="delNo">Keep it</button>'
+        : '<button class="linkish danger" type="button" id="del">Delete this plan</button>') + '</div>' +
+    '</div>';
+  }
+  function wireView(p) {
+    if ($('#bump')) $('#bump').onclick = () => { p.perNight = schedule(p).perNightNeeded; save(plans); render(); };
+    if ($('#all')) $('#all').onclick = () => { showAll = !showAll; render(); };
+    if ($('#del')) $('#del').onclick = () => { confirmDel = true; render(); };
+    if ($('#delNo')) $('#delNo').onclick = () => { confirmDel = false; render(); };
+    if ($('#delYes')) $('#delYes').onclick = () => { plans = plans.filter(x => x.id !== p.id); save(plans); cur = plans.length ? plans[0].id : 'new'; confirmDel = false; render(); };
+  }
+
+  function render() {
+    plans = load();
+    if (cur !== 'new' && !plans.find(p => p.id === cur)) cur = plans.length ? plans[0].id : 'new';
+    tabs();
+    const p = plans.find(x => x.id === cur);
+    $('#view').innerHTML = p && UNITS[p.code] ? view(p) : form();
+    if (p && UNITS[p.code]) wireView(p); else wireForm();
+  }
+  render();
+
+  const av = document.querySelector('a.avatar'); const first = String(profile.name || '').trim()[0]; if (av && first) av.textContent = first.toUpperCase();
+  $('#lights').addEventListener('click', () => {
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (dark) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', 'dark');
+  });
+})();
+</script>
+<script src="js/tour.js"></script>
+</body>
+</html>

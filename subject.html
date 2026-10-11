@@ -117,6 +117,15 @@
   .panel .hand { font-size: 28px; display: block; margin-bottom: 6px; }
 
   .pagefoot { margin-top: 80px; border-top: 2px solid var(--ink); padding-block: 24px 40px; color: var(--muted); font-size: 14px; }
+  .gen { margin: 0 0 14px; padding: 12px 14px; border-radius: 12px; background: var(--good-soft); color: var(--ink); font-weight: 600; font-size: 14.5px; display: flex; gap: 10px; align-items: center; }
+  .gen.bad { background: var(--bad-soft); }
+  .gen.busy { background: var(--paper-2); }
+  .gen .spin { flex: none; width: 16px; height: 16px; border-radius: 50%; border: 2.5px solid var(--line); border-top-color: var(--ink); animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .genbar { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: 14px; padding-top: 14px; border-top: 2px dashed var(--line); }
+  .genbar .gennote { font-size: 13px; color: var(--muted); flex-basis: 100%; }
+  .linkish { border: 0; background: none; padding: 0; font: 600 14px var(--font-body); color: var(--ink-2); text-decoration: underline; cursor: pointer; }
+  .linkish.danger { color: var(--bad); }
 </style>
 <script src="js/config.js"></script>
 <script src="js/sync.js"></script>
@@ -131,7 +140,7 @@
         Lamplight
       </a>
       <nav class="navlinks" aria-label="Main">
-        <a href="index.html">Home</a>
+        <a href="dashboard.html">Home</a>
         <a href="subject.html" aria-current="page">Learning</a>
         <a href="diagnostic.html">Diagnostic</a>
         <a href="analytics.html">Analytics</a>
@@ -186,6 +195,8 @@
 </footer>
 
 <script src="data/units.js"></script>
+<script src="js/banks.js"></script>
+<script src="js/qgen.js"></script>
 <script src="js/account.js"></script>
 <script src="js/subnav.js"></script>
 <script>
@@ -205,6 +216,8 @@
   ];
 
   let view = 'weeks', example = false, open = null;
+  const status = {}; /* per week: { busy, bad, text } */
+  const statusHTML = w => status[w] ? '<p class="gen' + (status[w].bad ? ' bad' : '') + (status[w].busy ? ' busy' : '') + '" id="st-' + w + '">' + (status[w].busy ? '<i class="spin" aria-hidden="true"></i>' : '') + esc(status[w].text) + '</p>' : '';
 
   function subject() {
     const list = window.Lamplight.subjects();
@@ -245,7 +258,7 @@
     $('#stSkills').textContent = exSkills;
     $('#stWeeks').textContent = (U ? U.weekList.length : example ? Math.max(uploaded, EXAMPLE.length) : uploaded) + ' of ' + weeks;
     $('#stMastered').textContent = exMastered;
-    if (U) $('#bannerNote').textContent = 'built from your ' + (U.term || '') + ' notes';
+    if (U) $('#bannerNote').textContent = U.generated ? 'questions made from your uploads' : 'built from your ' + (U.term || '') + ' notes';
     const nextSk = U && (allSk.find(k => ((PR[k.id] || {}).score || 0) < 100) || allSk[0]);
     $('#bannerActions').innerHTML = U
       ? '<a class="btn btn-yellow" href="practice.html#' + nextSk.id + '">' + (Object.keys(PR).some(k => k.startsWith(U.code)) ? 'Keep practising' : 'Start practising') + '</a><button class="btn" type="button" data-jump>Upload a week</button>'
@@ -276,7 +289,7 @@
       if (ex) {
         const m = Math.round(ex.skills.filter(s => s[1] >= 100).length / ex.skills.length * 100);
         const avg = Math.round(ex.skills.reduce((a, s) => a + s[1], 0) / ex.skills.length);
-        html += '<span class="exnote">' + (ex.real ? 'From your notes' : 'Example') + '</span><div class="mbar"><div class="t"><i style="width:' + avg + '%"></i></div><small>' + avg + '% of the way</small></div>' +
+        html += '<span class="exnote">' + (ex.real ? (real.generated ? 'Made from your uploads' : 'From your notes') : 'Example') + '</span><div class="mbar"><div class="t"><i style="width:' + avg + '%"></i></div><small>' + avg + '% of the way</small></div>' +
           '<button class="btn btn-small" type="button" data-open="' + w + '">' + (isOpen ? 'Hide skills' : 'See all ' + ex.skills.length + ' skills') + '</button>';
       } else if (fl.length) {
         html += '<span class="state">' + fl.length + ' file' + (fl.length > 1 ? 's' : '') + ' ready</span><button class="btn btn-small" type="button" data-open="' + w + '">' + (isOpen ? 'Close' : 'Add more') + '</button>';
@@ -286,8 +299,10 @@
       html += '</div>';
       if (isOpen) {
         html += '<div class="more">';
+        html += statusHTML(w);
         if (ex) {
           html += '<ol class="skills">' + ex.skills.map((s, i) => '<li><span class="c">' + w + '.' + (i + 1) + '</span><a href="practice.html' + (s[2] ? '#' + s[2] : '') + '">' + esc(s[0]) + '</a>' + (s[1] >= 100 ? medal : s[1] ? '<span class="s">' + s[1] + '</span>' : '') + '</li>').join('') + '</ol>';
+          if (real && real.generated) html += '<div class="genbar"><label class="btn btn-small">Add more files<input type="file" multiple data-in="' + w + '" accept=".pdf,.pptx,.docx,.txt,.md" hidden></label><button class="linkish danger" type="button" data-delweek="' + w + '">Delete this week\'s questions</button><span class="gennote">Made automatically, so a few may be clunky. Your hand-made banks stay the best.</span></div>';
         } else if (!S) {
           html += '<div class="drop"><b>Add your subject first</b><p>Give it a name, then you can drop in Week ' + w + '.</p><button class="btn btn-yellow btn-small" type="button" data-addsub>Add your first subject</button></div>';
         } else {
@@ -297,7 +312,7 @@
             '<label class="btn btn-small">Choose a folder<input type="file" multiple webkitdirectory data-in="' + w + '"></label></div></div>';
           if (fl.length) {
             html += '<div class="files">' + fl.map(f => { const t = typeOf(f.n); return '<div class="file"><i class="' + t[1] + '">' + t[0] + '</i><span class="n">' + esc(f.n) + '</span><small>' + size(f.s) + '</small></div>'; }).join('') + '</div>' +
-              '<p class="next-step"><span class="hand">saved.</span> Turning these into skills and questions is the next thing we build.</p>';
+              (status[w] ? '' : '<p class="next-step"><span class="hand">saved.</span> Drop them in again to try making questions from them.</p>');
           }
         }
         html += '</div>';
@@ -314,13 +329,55 @@
     const all = loadFiles(); all[S.id] = all[S.id] || {};
     const cur = all[S.id][w] || [];
     keep.forEach(f => { if (!cur.some(x => x.n === f.name)) cur.push({ n: f.name, s: f.size }); });
-    all[S.id][w] = cur; saveFiles(all); open = w; render();
+    all[S.id][w] = cur; saveFiles(all); open = w;
+    const U = (window.LAMPLIGHT_UNITS || {})[S.code || S.id];
+    const built = U && U.weekList.find(x => x.week === w && !x.generated);
+    if (built) { status[w] = { text: 'Saved. Week ' + w + ' already has a full question bank from your notes, so nothing new was made.' }; render(); return; }
+    makeQuestions(S, w, keep);
+  }
+
+  function setStatus(w, st) { status[w] = st; const el = document.getElementById('st-' + w); if (el) el.outerHTML = statusHTML(w); else render(); }
+  async function makeQuestions(S, w, files) {
+    const G = window.LamplightGen, B = window.LamplightBanks;
+    const readable = files.filter(f => G.canRead(f.name)), unread = files.filter(f => !G.canRead(f.name)).map(f => f.name);
+    const tip = n => n.length ? ' Couldn\'t read ' + n.join(', ') + '. Save as PDF, .pptx or .docx and drop it in again.' : '';
+    if (!readable.length) { status[w] = { bad: true, text: 'Lamplight can read PDF, PowerPoint (.pptx), Word (.docx) and text files.' + tip(unread) }; render(); return; }
+    status[w] = { busy: true, text: 'Reading your files' }; render();
+    try {
+      const got = await G.extract(readable, m => setStatus(w, { busy: true, text: m }));
+      setStatus(w, { busy: true, text: 'Writing questions' });
+      await new Promise(r => setTimeout(r, 30));
+      const code = S.code || S.id;
+      const r = G.build({ code, week: w, docs: got.docs });
+      if (r.error) { status[w] = { bad: true, text: r.error + tip(unread.concat(got.skipped)) }; render(); return; }
+      const bank = B.read(S.id) || { weekList: [] };
+      const prev = bank.weekList.find(x => x.week === w);
+      if (prev) {
+        const start = prev.skills.length;
+        r.week.skills.forEach((k, i) => { const nid = code + '-' + w + '.' + (start + i + 1); k.id = nid; });
+        prev.skills = prev.skills.concat(r.week.skills);
+        prev.summary = prev.summary.replace(/\.$/, '') + ', ' + got.docs.map(d => d.name).join(', ') + '.';
+      } else bank.weekList.push(r.week);
+      try { B.save(S.id, bank); }
+      catch (e) { status[w] = { bad: true, text: 'Your browser storage is full, so these questions couldn\'t be saved. Try fewer or smaller files.' }; render(); return; }
+      status[w] = { text: 'Made ' + r.stats.questions + ' questions in ' + r.stats.skills + ' skill' + (r.stats.skills === 1 ? '' : 's') + '. Open one to start practising.' + tip(unread.concat(got.skipped)) };
+      window.dispatchEvent(new Event('lamplight:subjects'));
+    } catch (e) { status[w] = { bad: true, text: 'Something went wrong reading these files: ' + e.message }; }
+    render();
+  }
+  function deleteWeek(w) {
+    const S = subject(); if (!S) return;
+    const B = window.LamplightBanks, bank = B.read(S.id);
+    if (bank) { bank.weekList = bank.weekList.filter(x => x.week !== w); if (bank.weekList.length) B.save(S.id, bank); else B.remove(S.id); }
+    const all = loadFiles(); if (all[S.id]) { delete all[S.id][w]; saveFiles(all); }
+    status[w] = { text: 'Deleted. Drop the files in again any time.' }; render();
   }
 
   document.addEventListener('click', e => {
     const t = e.target;
     const o = t.closest('[data-open]'); if (o) { const w = +o.dataset.open; open = open === w ? null : w; render(); return; }
     if (t.closest('[data-addsub]')) { window.Lamplight.addSubject(); return; }
+    const dw = t.closest('[data-delweek]'); if (dw) { if (dw.dataset.sure) deleteWeek(+dw.dataset.delweek); else { dw.dataset.sure = '1'; dw.textContent = 'Tap again to delete'; } return; }
     if (t.closest('[data-example]')) { setExample(true); open = 1; render(); document.querySelector('.weeks').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
     if (t.closest('[data-jump]')) {
       const S = subject(), f = loadFiles()[S.id] || {};

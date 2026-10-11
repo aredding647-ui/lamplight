@@ -26,6 +26,11 @@
   .msg { margin: 0; font-weight: 600; font-size: 15px; padding: 12px 14px; border-radius: 12px; }
   .msg.bad { color: var(--bad); background: var(--bad-soft); }
   .msg.good { color: var(--good); background: var(--good-soft); }
+  .prof { margin-top: 30px; padding-top: 24px; border-top: 2px dashed var(--line); max-width: none; }
+  .prof h2 { font-size: 24px; letter-spacing: -0.03em; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 520px) { .grid2 { grid-template-columns: 1fr; } }
+  .field select { font: 600 16px var(--font-body); padding: 12px 14px; border-radius: 12px; border: 2px solid var(--line); background: var(--paper); color: var(--ink); width: 100%; }
   .linkish { justify-self: start; border: 0; background: none; padding: 0; font: 600 15px var(--font-body); color: var(--ink-2); text-decoration: underline; cursor: pointer; }
   .status { display: flex; align-items: center; gap: 12px; margin-top: 22px; padding: 16px 18px; border: 2px solid var(--line); border-radius: 16px; background: var(--paper); }
   .status i { flex: none; width: 16px; height: 16px; border-radius: 99px; border: 2px solid var(--ink); background: var(--good); }
@@ -53,7 +58,7 @@
         Lamplight
       </a>
       <nav class="navlinks" aria-label="Main">
-        <a href="index.html" data-nav="home">Home</a>
+        <a href="dashboard.html" data-nav="home">Home</a>
         <a href="subject.html" data-nav="learning">Learning</a>
         <a href="diagnostic.html">Diagnostic</a>
         <a href="analytics.html">Analytics</a>
@@ -122,16 +127,37 @@
       const label = { synced: 'Saved to the cloud', syncing: 'Saving now', error: 'Couldn\'t save just now', off: 'Not saving' }[info.status] || 'Saved';
       const sub = info.status === 'error' ? esc(info.error || 'Check your internet. It will try again.') :
         'Last synced ' + when(info.last) + (info.pending ? ', ' + info.pending + ' change' + (info.pending > 1 ? 's' : '') + ' waiting' : '');
-      main.innerHTML = '<span class="hand">your account</span><h1>You\'re in.</h1>' +
+      const keep = $('#pf') ? { name: $('#pName').value, uni: $('#pUni').value, course: $('#pCourse').value, goal: $('#pGoal').value, lightsAt: $('#pLights').value } : null;
+      const P = Object.assign({}, (window.Lamplight && window.Lamplight.profile && window.Lamplight.profile()) || {}, keep && !(note && note[0] === 'prof') ? keep : {});
+      const first = String(P.name || '').trim().split(/\s+/)[0];
+      const goals = [10, 15, 20, 30, 40, 50], times = ['19:00', '20:00', '21:00', '22:00', '23:00'];
+      const t12 = t => { const [h] = t.split(':').map(Number); return (h % 12 || 12) + ' pm'; };
+      main.innerHTML = '<span class="hand">your account</span><h1>' + (first ? 'Hi, ' + esc(first) + '.' : 'You\'re in.') + '</h1>' +
         '<p>Signed in as <b>' + esc(info.email) + '</b>. Open Lamplight on any device, sign in with the same email, and you\'ll pick up right where you left off.</p>' +
         '<div class="status" data-s="' + info.status + '"><i></i><div><b>' + label + '</b><small>' + sub + '</small></div></div>' +
-        '<div class="actions" style="margin-top:24px"><button class="btn btn-yellow" id="syncNow" type="button"' + (busy ? ' disabled' : '') + '>Sync now</button>' +
-        '<button class="btn" id="out" type="button"' + (busy ? ' disabled' : '') + '>Sign out</button></div>';
+        '<div class="actions" style="margin-top:20px"><button class="btn btn-small" id="syncNow" type="button"' + (busy ? ' disabled' : '') + '>Sync now</button>' +
+        '<button class="btn btn-small" id="out" type="button"' + (busy ? ' disabled' : '') + '>Sign out</button></div>' +
+        '<form class="form prof" id="pf" novalidate><h2>Your profile</h2>' +
+          '<label class="field"><span>Name</span><input id="pName" autocomplete="name" value="' + esc(P.name || '') + '"></label>' +
+          '<label class="field"><span>Uni</span><input id="pUni" value="' + esc(P.uni || '') + '"></label>' +
+          '<label class="field"><span>Course</span><input id="pCourse" value="' + esc(P.course || '') + '"></label>' +
+          '<div class="grid2"><label class="field"><span>Nightly goal</span><select id="pGoal">' + goals.map(g => '<option value="' + g + '"' + (+P.goal === g ? ' selected' : '') + '>' + g + ' questions</option>').join('') + '</select></label>' +
+          '<label class="field"><span>Lights off from</span><select id="pLights">' + times.map(t => '<option value="' + t + '"' + (P.lightsAt === t ? ' selected' : '') + '>' + t12(t) + '</option>').join('') + '</select></label></div>' +
+          (note && note[0] === 'prof' ? '<p class="msg good">' + esc(note[1]) + '</p>' : '') +
+          '<div class="actions"><button class="btn btn-yellow" type="submit">Save profile</button></div></form>';
       $('#syncNow').onclick = () => { busy = true; render(); S.syncNow().then(() => { busy = false; render(); }); };
       $('#out').onclick = () => { busy = true; render(); S.signOut().then(() => { busy = false; note = ['good', 'Signed out. Everything stays saved on this device too.']; render(); }); };
+      $('#pf').onsubmit = e => {
+        e.preventDefault();
+        const cur = (window.Lamplight && window.Lamplight.profile && window.Lamplight.profile()) || {};
+        const next = Object.assign({}, cur, { name: $('#pName').value.trim(), uni: $('#pUni').value.trim(), course: $('#pCourse').value.trim(), goal: +$('#pGoal').value, lightsAt: $('#pLights').value });
+        try { localStorage.setItem('lamplight:profile', JSON.stringify(next)); } catch (err) {}
+        note = ['prof', 'Saved. It\'s on all your devices within a few seconds.']; render();
+      };
       return;
     }
     const up = mode === 'up';
+    if (!note && info.signedOutAt) note = ['bad', 'You were signed out on this device. Sign in again and everything comes back.'];
     const keepEm = $('#em') ? $('#em').value : '', keepPw = $('#pw') ? $('#pw').value : '';
     main.innerHTML = '<span class="hand">' + (up ? 'new here' : 'welcome back') + '</span><h1>' + (up ? 'Save your Lamplight.' : 'Sign in.') + '</h1>' +
       '<p>' + (up ? 'Make an account so your subjects, scores and diagnostic follow you to every device. Whatever is on this device now goes up with it.' : 'Sign in to bring your progress down from the cloud and keep it saving.') + '</p>' +
@@ -163,7 +189,7 @@
   }
 
   S.on(render);
-  setInterval(() => { if (S.info().signedIn) render(); }, 30000);
+  setInterval(() => { if (S.info().signedIn && !(document.activeElement && document.activeElement.closest && document.activeElement.closest('#pf'))) render(); }, 30000);
   document.getElementById('lights').addEventListener('click', () => {
     const dark = document.documentElement.getAttribute('data-theme') === 'dark';
     if (dark) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', 'dark');

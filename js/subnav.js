@@ -19,9 +19,9 @@
   var TOOLS = [
     { key: 'foryou', name: 'For you', href: 'recommendations.html',
       icon: '<path d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.3L12 16.9 6.4 20.1l1.4-6.3L3 9.5l6.4-.6Z"/>' },
-    { key: 'plans', name: 'Skill plans', href: 'coming-soon.html#skill-plans',
+    { key: 'plans', name: 'Skill plans', href: 'skill-plans.html',
       icon: '<rect x="4" y="4" width="16" height="17" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/>' },
-    { key: 'awards', name: 'Awards', href: 'coming-soon.html#awards',
+    { key: 'awards', name: 'Awards', href: 'awards.html',
       icon: '<circle cx="12" cy="9" r="5.5"/><path d="M8.5 13.5 7 21l5-2.5L17 21l-1.5-7.5"/>' }
   ];
 
@@ -105,7 +105,7 @@
     e.preventDefault();
     var name = dlg.querySelector('#subName').value.trim();
     if (!name) { dlg.querySelector('#subErr').hidden = false; dlg.querySelector('#subName').focus(); return; }
-    var code = dlg.querySelector('#subCode').value.trim().toUpperCase();
+    var code = dlg.querySelector('#subCode').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
     var weeks = +dlg.querySelector('#subWeeks [aria-pressed="true"]').getAttribute('data-w');
     var colour = dlg.querySelector('#subColour [aria-pressed="true"]').getAttribute('data-c');
     var id = 's' + Date.now().toString(36);

@@ -156,7 +156,7 @@
         Lamplight
       </a>
       <nav class="navlinks" aria-label="Main">
-        <a href="index.html">Home</a>
+        <a href="dashboard.html">Home</a>
         <a href="subject.html" aria-current="page">Learning</a>
         <a href="diagnostic.html">Diagnostic</a>
         <a href="analytics.html">Analytics</a>
@@ -191,6 +191,7 @@
 <footer class="pagefoot"><div class="wrap">Questions written from your own study notes. Progress saves in this browser for now.</div></footer>
 
 <script src="data/units.js"></script>
+<script src="js/banks.js"></script>
 <script src="js/account.js"></script>
 <script>
   /* tell the tab bar which unit we're in, before it draws */
@@ -396,7 +397,7 @@
     pr.missed = pr.missed || {}; if (!ok) { const k = ctx.skill.questions.indexOf(Q); pr.missed[k] = (pr.missed[k] || 0) + 1; }
     all[ctx.skill.id] = pr; window.Lamplight.saveProgress(all);
     const log = (() => { try { return JSON.parse(localStorage.getItem('lamplight:log') || '[]'); } catch (e) { return []; } })();
-    log.push({ t: Date.now(), s: ctx.skill.id, ok }); try { localStorage.setItem('lamplight:log', JSON.stringify(log.slice(-3000))); } catch (e) {}
+    log.push({ t: Date.now(), s: ctx.skill.id, ok, q: ctx.skill.questions.indexOf(Q) }); try { localStorage.setItem('lamplight:log', JSON.stringify(log.slice(-3000))); } catch (e) {}
     setScore(pr.score); $('#stQ').textContent = pr.answered; renderUpNext();
     $('#submit').hidden = true; $('#hint').textContent = '';
     const fb = $('#fbwrap');

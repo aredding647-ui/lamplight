@@ -16,13 +16,10 @@
       ['arena.html', 'Diagnostic Arena', 'The adaptive test'],
       ['analytics.html', 'Analytics', 'Summary report'],
       ['practice.html', 'Practice', 'Answer questions, SmartScore'],
+      ['dashboard.html', 'Dashboard', 'Tonight, your goal and streak'],
+      ['skill-plans.html', 'Skill plans', 'Night-by-night exam plans'],
+      ['awards.html', 'Awards', 'Prize boards and certificates'],
       ['account.html', 'Account', 'Sign in and cloud saving']
-    ] },
-    { g: 'Coming next', items: [
-      ['coming-soon.html#dashboard', 'Dashboard', 'Your home once signed in'],
-      
-      ['coming-soon.html#skill-plans', 'Skill plans', 'Plans for exams and assignments'],
-      ['coming-soon.html#awards', 'Awards', 'Prize board and certificates']
     ] }
   ];
   var here = (location.pathname.split('/').pop() || 'index.html') + (location.pathname.indexOf('coming-soon') > -1 ? location.hash : '');

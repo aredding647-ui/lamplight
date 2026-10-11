@@ -67,14 +67,23 @@
     return m;
   }
   var refreshing = null;
-  function token() {
+  function token(retried) {
     var s = session();
     if (!s) return Promise.reject(new Error('Not signed in'));
     if (s.expires_at - 60000 > Date.now()) return Promise.resolve(s.access_token);
     if (!refreshing) {
-      refreshing = call('/auth/v1/token?grant_type=refresh_token', { method: 'POST', body: JSON.stringify({ refresh_token: s.refresh_token }) })
+      var used = s.refresh_token;
+      refreshing = call('/auth/v1/token?grant_type=refresh_token', { method: 'POST', keepalive: true, body: JSON.stringify({ refresh_token: used }) })
         .then(function (r) { var n = fromAuth(r); saveSession(n); return n.access_token; })
-        .catch(function (e) { if (e.status === 400 || e.status === 401) { saveSession(null); setStatus('off', 'You were signed out. Sign in again to keep saving.'); } throw e; })
+        .catch(function (e) {
+          if (e.status !== 400 && e.status !== 401) throw e; /* offline or a hiccup: stay signed in and try later */
+          var now2 = session();
+          /* another page may have just refreshed the session; if so, use that one */
+          if (now2 && now2.refresh_token !== used) return now2.access_token;
+          if (!retried) return new Promise(function (r) { setTimeout(r, 1500); }).then(function () { refreshing = null; return token(true); });
+          saveSession(null); wj('lamplight:_signedout', { t: Date.now(), why: e.message });
+          setStatus('off', 'You were signed out. Sign in again to keep saving.'); throw e;
+        })
         .then(function (t) { refreshing = null; return t; }, function (e) { refreshing = null; throw e; });
     }
     return refreshing;
@@ -177,7 +186,7 @@
   /* ---------- sign in, sign up, sign out ---------- */
   function signIn(email, password) {
     return call('/auth/v1/token?grant_type=password', { method: 'POST', body: JSON.stringify({ email: email, password: password }) })
-      .then(function (r) { saveSession(fromAuth(r)); rm(SYNCED); return pull(true); });
+      .then(function (r) { saveSession(fromAuth(r)); rm(SYNCED); rm('lamplight:_signedout'); return pull(true); });
   }
   function signUp(email, password) {
     return call('/auth/v1/signup', { method: 'POST', body: JSON.stringify({ email: email, password: password }) })
@@ -193,7 +202,8 @@
 
   function api() {
     var s = session();
-    return { ready: READY, signedIn: !!s, email: s ? s.user.email : '', status: s ? state.status : 'off', error: state.error, last: state.last,
+    var so = rj('lamplight:_signedout', null);
+    return { ready: READY, signedIn: !!s, signedOutAt: !s && so ? so.t : null, email: s ? s.user.email : '', status: s ? state.status : 'off', error: state.error, last: state.last,
       pending: Object.keys(rj(PENDING, {})).length };
   }
 

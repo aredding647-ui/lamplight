@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Awards · Lamplight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Caveat:wght@600;700&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/lamplight.css">
+<style>
+  .navlinks a[aria-current="page"] { background: var(--hl-yellow); color: #141414; }
+  .avatar { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--ink); background: var(--hl-pink); color: #141414; display: grid; place-items: center; font: 800 17px var(--font-display); text-decoration: none; box-shadow: 0 3px 0 var(--shadow); }
+  .icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--line); background: var(--card); display: grid; place-items: center; cursor: pointer; color: var(--ink); }
+  .pagefoot { margin-top: 80px; border-top: 2px solid var(--ink); padding-block: 24px 40px; color: var(--muted); font-size: 14px; }
+
+  .top { margin-top: 34px; display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+  .top .hand { font-size: 26px; color: var(--muted); transform: rotate(-2deg); display: inline-block; }
+  .top h1 { font-size: clamp(42px, 6.5vw, 80px); letter-spacing: -0.045em; margin-top: 4px; }
+  .top p { margin: 10px 0 0; font-size: 17.5px; color: var(--ink-2); max-width: 32em; }
+  .tally { text-align: right; }
+  .tally b { font: 800 64px/0.9 var(--font-display); letter-spacing: -0.05em; }
+  .tally span { display: block; color: var(--muted); font-weight: 600; font-size: 14.5px; margin-top: 4px; }
+
+  .card { background: var(--card); border: 2.5px solid var(--ink); border-radius: 24px; box-shadow: 0 6px 0 var(--shadow); padding: 24px; }
+  .label { font: 700 12px var(--font-body); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+  .sec { margin-top: 44px; }
+  .sec-h { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .sec-h h2 { font-size: 30px; letter-spacing: -0.035em; }
+  .sec-h p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1.3fr; gap: 18px; margin-top: 30px; }
+  @media (max-width: 900px) { .pair { grid-template-columns: 1fr; } }
+  .latest { display: flex; gap: 18px; align-items: center; }
+  .latest .medal { flex: none; width: 96px; height: 96px; border-radius: 26px; border: 2.5px solid var(--ink); background: var(--c); display: grid; place-items: center; box-shadow: 0 4px 0 var(--shadow); transform: rotate(-4deg); }
+  .latest .medal svg { width: 58px; height: 58px; }
+  .latest h3 { font-size: 26px; letter-spacing: -0.03em; }
+  .latest p { margin: 6px 0 0; color: var(--ink-2); font-size: 15px; }
+  .latest small { color: var(--muted); font-weight: 600; }
+  .nexts { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .nexts li { display: grid; grid-template-columns: 42px 1fr auto; gap: 12px; align-items: center; }
+  .nexts .g { width: 42px; height: 42px; border-radius: 12px; border: 2px dashed var(--line); display: grid; place-items: center; }
+  .nexts .g svg { width: 24px; height: 24px; opacity: .45; }
+  .nexts b { font-size: 15px; display: block; }
+  .nexts small { color: var(--muted); font-size: 13px; }
+  .nexts .mini { height: 8px; border-radius: 99px; background: var(--paper-2); margin-top: 6px; overflow: hidden; }
+  .nexts .mini span { display: block; height: 100%; background: var(--c); }
+  .nexts .n { font: 700 13px var(--font-mono); color: var(--muted); white-space: nowrap; }
+
+  .ptabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .ptab { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 12px; border: 2px solid var(--line); background: var(--card); font-weight: 700; font-size: 14.5px; cursor: pointer; color: var(--ink-2); }
+  .ptab i { width: 11px; height: 11px; border-radius: 4px; background: var(--c); border: 1.5px solid var(--ink); }
+  .ptab small { font: 700 11.5px var(--font-mono); color: var(--muted); }
+  .ptab[aria-pressed="true"] { border-color: var(--ink); color: var(--ink); box-shadow: 0 3px 0 var(--shadow); }
+
+  .board { display: grid; grid-template-columns: repeat(8, 1fr); gap: 12px; }
+  @media (max-width: 1000px) { .board { grid-template-columns: repeat(6, 1fr); } }
+  @media (max-width: 640px) { .board { grid-template-columns: repeat(4, 1fr); gap: 9px; } }
+  .tile { position: relative; aspect-ratio: 1; border-radius: 18px; border: 2px dashed var(--line); background: var(--paper); display: grid; place-items: center; cursor: pointer; padding: 0; color: var(--muted); transition: transform .15s ease; perspective: 600px; }
+  .tile:hover { transform: translateY(-2px); }
+  .tile .q { font: 700 30px var(--font-hand); color: var(--line); }
+  .tile .pc { position: absolute; left: 10px; right: 10px; bottom: 9px; height: 5px; border-radius: 99px; background: var(--paper-2); overflow: hidden; }
+  .tile .pc span { display: block; height: 100%; background: var(--muted); opacity: .5; }
+  .tile.won { border: 2.5px solid var(--ink); background: var(--c); color: #141414; box-shadow: 0 4px 0 var(--shadow); }
+  .tile.won svg { width: 54%; height: 54%; }
+  .tile.won .nm { position: absolute; left: 6px; right: 6px; bottom: 6px; font: 700 10.5px/1.1 var(--font-body); text-align: center; color: #141414; opacity: .8; }
+  .tile.won.has-nm svg { margin-bottom: 14px; }
+  .tile[aria-pressed="true"] { outline: 3px solid var(--ink); outline-offset: 3px; }
+  .tile.fresh { animation: flip .9s cubic-bezier(.3,.8,.3,1) both; }
+  .tile.fresh::after { content: "new"; position: absolute; top: -9px; right: -7px; font: 700 15px var(--font-hand); background: var(--hl-pink); color: #141414; border: 2px solid var(--ink); border-radius: 99px; padding: 0 8px; transform: rotate(8deg); }
+  @keyframes flip { 0% { transform: rotateY(180deg) scale(.8); } 60% { transform: rotateY(-12deg) scale(1.05); } 100% { transform: none; } }
+  @media (max-width: 640px) { .tile.won .nm { display: none; } .tile.won.has-nm svg { margin-bottom: 0; } }
+
+  .detail { margin-top: 18px; display: flex; gap: 16px; align-items: center; padding: 16px 18px; border-radius: 16px; background: var(--paper); border: 2px solid var(--line); }
+  .detail .g { flex: none; width: 56px; height: 56px; border-radius: 15px; display: grid; place-items: center; border: 2px dashed var(--line); }
+  .detail .g.won { background: var(--c); border: 2px solid var(--ink); color: #141414; }
+  .detail .g svg { width: 32px; height: 32px; }
+  .detail b { font-size: 17px; display: block; }
+  .detail p { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
+  .detail .mini { height: 8px; border-radius: 99px; background: var(--paper-2); margin-top: 8px; overflow: hidden; max-width: 320px; }
+  .detail .mini span { display: block; height: 100%; background: var(--c); }
+
+  .certs { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .cert { display: grid; gap: 8px; padding: 18px; border-radius: 18px; border: 2px solid var(--ink); background: var(--card); box-shadow: 0 4px 0 var(--shadow); position: relative; overflow: hidden; }
+  .cert::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 8px; background: var(--c); border-bottom: 2px solid var(--ink); }
+  .cert b { font: 800 19px var(--font-display); letter-spacing: -0.02em; margin-top: 6px; }
+  .cert small { color: var(--muted); font-size: 13.5px; }
+  .cert .btn { justify-self: start; }
+  .empty { padding: 20px; border-radius: 18px; background: var(--paper); color: var(--ink-2); font-size: 15px; }
+  .empty .hand { font-size: 22px; color: var(--muted); display: block; }
+
+  /* certificate */
+  .certdlg { border: 0; padding: 0; background: transparent; width: min(96vw, 900px); }
+  .certdlg::backdrop { background: rgba(20,20,20,.55); backdrop-filter: blur(3px); }
+  .paper { background: #FFFDF6; color: #141414; border: 3px solid #141414; border-radius: 22px; padding: 46px 52px; position: relative; text-align: center; box-shadow: 0 10px 0 #141414; }
+  .paper .in { border: 2px dashed #CFCFC4; border-radius: 14px; padding: 36px 26px; }
+  .paper .hand { font: 700 30px var(--font-hand); color: #6A6B64; }
+  .paper h2 { font: 800 clamp(34px, 6vw, 58px)/1 var(--font-display); letter-spacing: -0.04em; margin: 8px 0 0; }
+  .paper .who { font: 800 clamp(28px, 4.5vw, 42px) var(--font-display); letter-spacing: -0.03em; margin: 22px 0 6px; display: inline-block; position: relative; isolation: isolate; }
+  .paper .who::before { content: ""; position: absolute; z-index: -1; left: -.1em; right: -.1em; top: .25em; bottom: .02em; background: var(--c); border-radius: .2em .5em .3em .6em; transform: rotate(-1.2deg); }
+  .paper p { font-size: 18px; margin: 10px auto 0; max-width: 30em; color: #3A3A37; }
+  .paper .foot { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 34px; font-size: 14px; color: #6A6B64; text-align: left; }
+  .paper .seal { color: #141414; width: 86px; height: 86px; border-radius: 50%; border: 3px solid #141414; background: var(--c); display: grid; place-items: center; transform: rotate(-8deg); }
+  .paper .seal svg { width: 46px; height: 46px; }
+  .paper .cbrand { display: block; font: 800 20px var(--font-display); color: #141414; letter-spacing: -0.02em; }
+  .dlgbar { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+  @media print {
+    body > *:not(.certdlg) { display: none !important; }
+    .certdlg { position: static; width: 100%; max-width: none; }
+    .certdlg::backdrop { display: none; }
+    .dlgbar { display: none; }
+    .paper { box-shadow: none; }
+    body { background: #fff !important; }
+    @page { size: landscape; margin: 12mm; }
+  }
+</style>
+<script src="js/config.js"></script>
+<script src="js/sync.js"></script>
+</head>
+<body class="app">
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="bar">
+      <a class="brand" href="index.html" aria-label="Lamplight home">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 14 16 4l8 10Z" fill="var(--hl-yellow)" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><path d="M11 17 5 29h22l-6-12Z" fill="var(--hl-yellow)" opacity=".45"/><circle cx="16" cy="15.5" r="2" fill="var(--ink)"/></svg>
+        Lamplight
+      </a>
+      <nav class="navlinks" aria-label="Main">
+        <a href="dashboard.html" data-nav="home">Home</a>
+        <a href="subject.html" data-nav="learning" aria-current="page">Learning</a>
+        <a href="diagnostic.html">Diagnostic</a>
+        <a href="analytics.html">Analytics</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn" type="button" id="lights" aria-label="Turn lights off" title="Lights off">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
+        </button>
+        <a class="avatar" href="account.html" aria-label="Your account">S</a>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="subnav" id="subnav" data-current="awards"></div>
+
+<main class="wrap" id="main">
+  <section class="top">
+    <div>
+      <span class="hand">your prizes</span>
+      <h1>Awards</h1>
+      <p>Every subject has a board of hidden prizes. Practise, master skills and show up at night to uncover them.</p>
+    </div>
+    <div class="tally"><b id="tally">0</b><span id="tallyOf">prizes uncovered</span></div>
+  </section>
+
+  <section class="pair">
+    <div class="card" id="latest"></div>
+    <div class="card"><p class="label">Closest to uncovering</p><ul class="nexts" id="nexts"></ul></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h"><h2>Prize boards</h2><p>Tap a square to see what it takes.</p></div>
+    <div class="ptabs" id="tabs"></div>
+    <div class="card"><div class="board" id="board"></div><div class="detail" id="detail"></div></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h"><h2>Every night counts</h2><p>Prizes across all your subjects.</p></div>
+    <div class="card"><div class="board" id="life"></div><div class="detail" id="lifeDetail"></div></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h"><h2>Certificates</h2><p>Master every skill in a week and its certificate is yours to keep.</p></div>
+    <div class="certs" id="certs"></div>
+  </section>
+</main>
+
+<dialog class="certdlg" id="certDlg"><div class="paper" id="paper"></div><div class="dlgbar"><button class="btn" type="button" id="certClose">Close</button><button class="btn btn-yellow" type="button" id="certPrint">Print or save as PDF</button></div></dialog>
+
+<footer class="pagefoot"><div class="wrap">Prizes are worked out from your own practice and saved to your account.</div></footer>
+
+<script src="data/units.js"></script>
+<script src="js/banks.js"></script>
+<script src="js/account.js"></script>
+<script src="js/subnav.js"></script>
+<script src="js/diag-core.js"></script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const UNITS = window.LAMPLIGHT_UNITS || {};
+  const L = window.Lamplight || {}, D = window.LamplightDiag;
+  const read = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } };
+  const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+  const PR = (L.progress && L.progress()) || {};
+  const LOG = read('lamplight:log', []).filter(x => x && x.t && x.s);
+  const profile = (L.profile && L.profile()) || {};
+  const subs = (L.subjects ? L.subjects() : []).filter(s => UNITS[s.code || s.id]);
+  const DAY = 86400000;
+  const dayKey = t => { const d = new Date(t); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
+
+  /* little drawings for the prizes */
+  const G = {
+    spark: '<path d="M20 4l3.5 10.5L34 18l-10.5 3.5L20 32l-3.5-10.5L6 18l10.5-3.5Z" fill="currentColor"/>',
+    medal: '<circle cx="20" cy="16" r="10" fill="none" stroke="currentColor" stroke-width="3.2"/><path d="M14 25l-3 11 9-4 9 4-3-11" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round"/>',
+    book: '<path d="M6 9c5-2 10-2 14 1 4-3 9-3 14-1v22c-5-2-10-2-14 1-4-3-9-3-14-1Z" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round"/><path d="M20 10v22" stroke="currentColor" stroke-width="3"/>',
+    clock: '<circle cx="20" cy="20" r="14" fill="none" stroke="currentColor" stroke-width="3.2"/><path d="M20 11v10l6 4" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>',
+    lens: '<circle cx="17" cy="17" r="10" fill="none" stroke="currentColor" stroke-width="3.2"/><path d="M25 25l9 9" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"/>',
+    flame: '<path d="M20 4c2 7 10 10 10 19a10 10 0 0 1-20 0c0-5 3-8 5-10 0 4 2 6 4 6-1-5 0-10 1-15Z" fill="currentColor"/>',
+    moon: '<path d="M30 25A12 12 0 1 1 18 7a9.5 9.5 0 0 0 12 18Z" fill="currentColor"/><circle cx="30" cy="9" r="2" fill="currentColor"/>',
+    lamp: '<path d="M11 18 20 6l9 12Z" fill="currentColor"/><path d="M20 18v12M13 33h14" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>',
+    crown: '<path d="M6 30 8 12l8 8 4-12 4 12 8-8 2 18Z" fill="currentColor"/>',
+    leaf: '<path d="M8 32C8 16 18 7 33 7c0 15-9 25-25 25Z" fill="currentColor"/><path d="M8 32 22 18" stroke="var(--c)" stroke-width="2.5"/>',
+    heart: '<path d="M20 33S6 24 6 14a7 7 0 0 1 14-2 7 7 0 0 1 14 2c0 10-14 19-14 19Z" fill="currentColor"/>',
+    target: '<circle cx="20" cy="20" r="14" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="20" cy="20" r="7" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="20" cy="20" r="2.5" fill="currentColor"/>'
+  };
+  const svg = k => '<svg viewBox="0 0 40 40" aria-hidden="true">' + G[k] + '</svg>';
+
+  /* ---------- work out the numbers ---------- */
+  function unitStats(code) {
+    const U = UNITS[code], sk = U.weekList.flatMap(w => w.skills);
+    const p = id => PR[id] || {};
+    const log = LOG.filter(x => x.s.indexOf(code + '-') === 0);
+    let run = 0, best = 0; log.forEach(x => { run = x.ok ? run + 1 : 0; if (run > best) best = run; });
+    const dd = D && D.getD ? D.getD().units[code] : null;
+    const lv = D && D.weekLevel ? U.weekList.filter(w => D.weekLevel(code, w.week).v != null).length : 0;
+    return {
+      U, answered: sk.reduce((a, k) => a + (p(k.id).answered || 0), 0),
+      mastered: sk.filter(k => (p(k.id).score || 0) >= 100).length, skills: sk.length,
+      weeksDone: U.weekList.filter(w => w.skills.every(k => (p(k.id).score || 0) >= 100)).length, weeks: U.weekList.length,
+      mins: Math.round(sk.reduce((a, k) => a + (p(k.id).seconds || 0), 0) / 60),
+      diag: dd ? 1 : 0, levels: lv, best,
+      owl: log.filter(x => { const h = new Date(x.t).getHours(); return h >= 22 || h < 4; }).length,
+      nights: new Set(log.map(x => dayKey(x.t))).size
+    };
+  }
+  function unitPrizes(code) {
+    const s = unitStats(code), half = Math.ceil(s.weeks / 2);
+    const P = (id, name, desc, v, goal, g) => ({ key: code + ':' + id, name, desc, v: Math.min(v, goal), goal, g });
+    return [
+      P('q10', 'First spark', 'Answer 10 questions', s.answered, 10, 'spark'),
+      P('m1', 'First medal', 'Master your first skill', s.mastered, 1, 'medal'),
+      P('d1', 'Checked in', 'Run a diagnostic on this subject', s.diag, 1, 'lens'),
+      P('q25', 'Warming up', 'Answer 25 questions', s.answered, 25, 'spark'),
+      P('t30', 'Half hour', 'Practise for 30 minutes', s.mins, 30, 'clock'),
+      P('r10', 'Hot hand', '10 right in a row', s.best, 10, 'flame'),
+      P('m3', 'Hat trick', 'Master 3 skills', s.mastered, 3, 'medal'),
+      P('q50', 'Fifty', 'Answer 50 questions', s.answered, 50, 'spark'),
+      P('n5', 'Regular', 'Practise on 5 different nights', s.nights, 5, 'heart'),
+      P('w1', 'Week wrapped', 'Master every skill in one week', s.weeksDone, 1, 'book'),
+      P('owl', 'Night owl', '10 questions after 10 pm', s.owl, 10, 'moon'),
+      P('t60', 'Full hour', 'Practise for an hour', s.mins, 60, 'clock'),
+      P('m5', 'High five', 'Master 5 skills', s.mastered, 5, 'medal'),
+      P('q100', 'Century', 'Answer 100 questions', s.answered, 100, 'target'),
+      P('r25', 'On fire', '25 right in a row', s.best, 25, 'flame'),
+      P('dAll', 'Full picture', 'Get a level for every week', s.levels, s.weeks, 'lens'),
+      P('m10', 'Ten down', 'Master 10 skills', s.mastered, 10, 'medal'),
+      P('w3', 'Three weeks', 'Master every skill in 3 weeks', s.weeksDone, 3, 'book'),
+      P('q250', 'Steady glow', 'Answer 250 questions', s.answered, 250, 'lamp'),
+      P('t180', 'Three hours', 'Practise for 3 hours', s.mins, 180, 'clock'),
+      P('m20', 'Twenty', 'Master 20 skills', s.mastered, 20, 'medal'),
+      P('wHalf', 'Halfway', 'Master every skill in ' + half + ' weeks', s.weeksDone, half, 'leaf'),
+      P('q500', 'Bright lamp', 'Answer 500 questions', s.answered, 500, 'lamp'),
+      P('mAll', 'Whole unit', 'Master all ' + s.skills + ' skills', s.mastered, s.skills, 'crown')
+    ];
+  }
+  function lifePrizes() {
+    const days = new Set(LOG.map(x => dayKey(x.t)));
+    const sorted = [...days].map(k => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d).getTime(); }).sort((a, b) => a - b);
+    let best = 0, run = 0; sorted.forEach((t, i) => { run = i && Math.round((t - sorted[i - 1]) / DAY) === 1 ? run + 1 : 1; if (run > best) best = run; });
+    const goal = +profile.goal || 20, per = {};
+    LOG.forEach(x => { const k = dayKey(x.t); per[k] = (per[k] || 0) + 1; });
+    const goalDays = Object.values(per).filter(n => n >= goal).length;
+    const total = Object.values(PR).reduce((a, p) => a + (p.answered || 0), 0);
+    const mastered = Object.values(PR).filter(p => (p.score || 0) >= 100).length;
+    const P = (id, name, desc, v, g2, g) => ({ key: 'life:' + id, name, desc, v: Math.min(v, g2), goal: g2, g });
+    return { best, list: [
+      P('s3', 'Three nights', '3 nights in a row', best, 3, 'flame'),
+      P('g1', 'Goal hit', 'Hit your nightly goal once', goalDays, 1, 'target'),
+      P('s7', 'Full week', '7 nights in a row', best, 7, 'flame'),
+      P('g5', 'Five goals', 'Hit your nightly goal 5 times', goalDays, 5, 'target'),
+      P('t1k', 'A thousand', 'Answer 1,000 questions in total', total, 1000, 'lamp'),
+      P('s14', 'Fortnight', '14 nights in a row', best, 14, 'moon'),
+      P('m25', 'Collector', 'Master 25 skills across subjects', mastered, 25, 'medal'),
+      P('g20', 'Twenty goals', 'Hit your nightly goal 20 times', goalDays, 20, 'target'),
+      P('s30', 'Full moon', '30 nights in a row', best, 30, 'moon'),
+      P('m100', 'Hundred club', 'Master 100 skills across subjects', mastered, 100, 'crown'),
+      P('t5k', 'Lighthouse', 'Answer 5,000 questions in total', total, 5000, 'lamp'),
+      P('s100', 'Unbroken', '100 nights in a row', best, 100, 'heart')
+    ] };
+  }
+
+  /* remember when each prize was first uncovered */
+  const seen = read('lamplight:awards', {});
+  const fresh = new Set();
+  const life = lifePrizes();
+  const boards = subs.map(s => ({ s, code: s.code || s.id, list: unitPrizes(s.code || s.id) }));
+  const everything = boards.flatMap(b => b.list.map(p => Object.assign(p, { c: b.s.colour, code: b.code }))).concat(life.list.map(p => Object.assign(p, { c: 'var(--hl-yellow)', code: '' })));
+  let changed = false;
+  everything.forEach(p => { if (p.v >= p.goal && p.goal > 0 && !seen[p.key]) { seen[p.key] = Date.now(); fresh.add(p.key); changed = true; } });
+  if (changed) write('lamplight:awards', seen);
+  const won = p => p.goal > 0 && p.v >= p.goal;
+
+  /* ---------- top ---------- */
+  const got = everything.filter(won);
+  $('#tally').textContent = got.length;
+  $('#tallyOf').textContent = 'of ' + everything.length + ' prizes uncovered';
+  const newest = got.slice().sort((a, b) => (seen[b.key] || 0) - (seen[a.key] || 0))[0];
+  $('#latest').innerHTML = newest
+    ? '<p class="label">Latest prize</p><div class="latest" style="--c:' + newest.c + '"><div class="medal">' + svg(newest.g) + '</div><div><h3>' + esc(newest.name) + '</h3><p>' + esc(newest.desc) + (newest.code ? ' in ' + esc(newest.code) : '') + '.</p><small>Uncovered ' + new Date(seen[newest.key]).toLocaleDateString('en-AU', { day: 'numeric', month: 'long' }) + '</small></div></div>'
+    : '<p class="label">Latest prize</p><div class="empty"><span class="hand">nothing yet</span>Answer 10 questions in any subject to uncover your first prize.</div>';
+  const close = everything.filter(p => !won(p) && p.goal > 0 && p.v > 0).sort((a, b) => (b.v / b.goal) - (a.v / a.goal)).slice(0, 4);
+  const starters = everything.filter(p => !won(p) && p.goal > 0 && !close.includes(p)).slice(0, 4 - close.length);
+  $('#nexts').innerHTML = close.concat(starters).map(p => '<li style="--c:' + p.c + '"><span class="g">' + svg(p.g) + '</span><div><b>' + esc(p.name) + (p.code ? ' <small>' + esc(p.code) + '</small>' : '') + '</b><small>' + esc(p.desc) + '</small><div class="mini"><span style="width:' + Math.round(p.v / p.goal * 100) + '%"></span></div></div><span class="n">' + p.v + ' / ' + p.goal + '</span></li>').join('') || '<li class="empty">Every prize uncovered. Wow.</li>';
+
+  /* ---------- boards ---------- */
+  function tile(p, i) {
+    const w = won(p);
+    return '<button type="button" class="tile' + (w ? ' won has-nm' : '') + (fresh.has(p.key) ? ' fresh' : '') + '" data-i="' + i + '" aria-pressed="false" aria-label="' + esc(w ? p.name + ', uncovered' : 'Hidden prize') + '" style="--c:' + p.c + (fresh.has(p.key) ? ';animation-delay:' + (i * 60) + 'ms' : '') + '">' +
+      (w ? svg(p.g) + '<span class="nm">' + esc(p.name) + '</span>' : '<span class="q">?</span><span class="pc"><span style="width:' + Math.round(p.v / p.goal * 100) + '%"></span></span>') + '</button>';
+  }
+  function detail(el, p) {
+    const w = won(p);
+    el.style.setProperty('--c', p.c);
+    el.innerHTML = '<span class="g' + (w ? ' won' : '') + '">' + (w ? svg(p.g) : '<span class="hand" style="font-size:26px;color:var(--muted)">?</span>') + '</span><div><b>' + (w ? esc(p.name) : 'Hidden prize') + '</b><p>' + esc(p.desc) + '. ' + (w ? 'Uncovered ' + new Date(seen[p.key]).toLocaleDateString('en-AU', { day: 'numeric', month: 'long' }) + '.' : p.v + ' of ' + p.goal + ' so far.') + '</p>' + (w ? '' : '<div class="mini"><span style="width:' + Math.round(p.v / p.goal * 100) + '%"></span></div>') + '</div>';
+  }
+  function wireBoard(boardEl, detailEl, list) {
+    boardEl.innerHTML = list.map(tile).join('');
+    const pick = i => { boardEl.querySelectorAll('.tile').forEach(t => t.setAttribute('aria-pressed', String(+t.dataset.i === i))); detail(detailEl, list[i]); };
+    boardEl.onclick = e => { const t = e.target.closest('.tile'); if (t) pick(+t.dataset.i); };
+    const first = list.findIndex(p => fresh.has(p.key)); pick(first >= 0 ? first : Math.max(0, list.findIndex(p => !won(p))));
+  }
+  let cur = boards.findIndex(b => b.list.some(p => fresh.has(p.key)));
+  if (cur < 0) cur = Math.max(0, boards.findIndex(b => !b.s.done));
+  function renderBoards() {
+    if (!boards.length) { $('#tabs').innerHTML = ''; $('#board').innerHTML = '<div class="empty" style="grid-column:1/-1"><span class="hand">no subjects yet</span>Add a subject to get its prize board.</div>'; $('#detail').hidden = true; return; }
+    $('#tabs').innerHTML = boards.map((b, i) => { const n = b.list.filter(won).length; return '<button class="ptab" type="button" data-i="' + i + '" aria-pressed="' + (i === cur) + '" style="--c:' + b.s.colour + '"><i></i>' + esc(b.s.name) + ' <small>' + n + '/' + b.list.length + '</small></button>'; }).join('');
+    wireBoard($('#board'), $('#detail'), boards[cur].list);
+  }
+  $('#tabs').addEventListener('click', e => { const b = e.target.closest('.ptab'); if (!b) return; cur = +b.dataset.i; renderBoards(); });
+  renderBoards();
+  wireBoard($('#life'), $('#lifeDetail'), life.list);
+
+  /* ---------- certificates ---------- */
+  const certs = [];
+  boards.forEach(b => {
+    const U = UNITS[b.code];
+    if (U.weekList.every(w => w.skills.every(k => ((PR[k.id] || {}).score || 0) >= 100))) certs.push({ b, title: 'Whole unit mastered', what: 'every skill in ' + U.name + ' (' + U.code + ')', g: 'crown', when: Math.max(...U.weekList.flatMap(w => w.skills.map(k => (PR[k.id] || {}).last || 0))) });
+    U.weekList.forEach(w => { if (w.skills.every(k => ((PR[k.id] || {}).score || 0) >= 100)) certs.push({ b, title: 'Week ' + w.week + ' mastered', what: 'every skill in Week ' + w.week + ', ' + w.topic + ', of ' + U.code, g: 'book', when: Math.max(...w.skills.map(k => (PR[k.id] || {}).last || 0)) }); });
+  });
+  if (life.best >= 7) certs.push({ b: { s: { colour: 'var(--hl-orange)' } }, title: life.best + ' nights in a row', what: 'a study streak of ' + life.best + ' nights in a row', g: 'flame', when: Date.now() });
+  $('#certs').innerHTML = certs.length ? certs.map((c, i) => '<div class="cert" style="--c:' + c.b.s.colour + '"><b>' + esc(c.title) + '</b><small>' + esc(c.what.charAt(0).toUpperCase() + c.what.slice(1)) + '</small><button class="btn btn-small" type="button" data-c="' + i + '">View certificate</button></div>').join('')
+    : '<div class="empty"><span class="hand">your first one is waiting</span>Get every skill in a week to a SmartScore of 100 and its certificate appears here, ready to print.</div>';
+  const dlg = $('#certDlg');
+  $('#certs').addEventListener('click', e => {
+    const b = e.target.closest('[data-c]'); if (!b) return; const c = certs[+b.dataset.c];
+    $('#paper').style.setProperty('--c', c.b.s.colour);
+    $('#paper').innerHTML = '<div class="in"><span class="hand">certificate of mastery</span><h2>' + esc(c.title) + '</h2><div class="who">' + esc(profile.name || 'A Lamplight student') + '</div><p>has mastered ' + esc(c.what) + ', one question at a time, by lamplight.</p>' +
+      '<div class="foot"><div><div class="cbrand">Lamplight</div>' + new Date(c.when || Date.now()).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' }) + '</div><div class="seal">' + svg(c.g) + '</div></div></div>';
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+  });
+  $('#certClose').onclick = () => dlg.close();
+  $('#certPrint').onclick = () => window.print();
+
+  const av = document.querySelector('a.avatar'); const first = String(profile.name || '').trim()[0]; if (av && first) av.textContent = first.toUpperCase();
+  $('#lights').addEventListener('click', () => {
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (dark) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', 'dark');
+  });
+})();
+</script>
+<script src="js/tour.js"></script>
+</body>
+</html>

@@ -207,8 +207,9 @@
       pending: Object.keys(rj(PENDING, {})).length };
   }
 
+  function changePassword(pw) { return authed('/auth/v1/user', { method: 'PUT', body: JSON.stringify({ password: pw }) }); }
   window.LamplightSync = {
-    info: api, signIn: signIn, signUp: signUp, signOut: signOut,
+    info: api, signIn: signIn, signUp: signUp, signOut: signOut, changePassword: changePassword,
     syncNow: function () { return pull(false); },
     on: function (f) { listeners.push(f); f(api()); }
   };

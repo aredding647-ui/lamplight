@@ -78,9 +78,27 @@
   .empty h2 { font-size: 34px; letter-spacing: -0.03em; }
   .empty p { color: var(--ink-2); }
   .pagefoot { margin-top: 70px; border-top: 2px solid var(--ink); padding-block: 24px 40px; color: var(--muted); font-size: 14px; }
+  .reveal { display: flex; align-items: center; gap: 14px; padding: 10px 72px 10px 18px; background: var(--paper-2); border-left: 2.5px solid var(--ink); border-right: 2.5px solid var(--ink); font-size: 13.5px; color: var(--ink-2); flex-wrap: wrap; }
+  .reveal:empty { display: none; }
+  .reveal .rbar { flex: 1; min-width: 120px; height: 8px; border-radius: 99px; background: var(--card); overflow: hidden; }
+  .reveal .rbar i { display: block; height: 100%; background: var(--good); transition: width .5s ease; }
+  .done { text-align: center; padding: 10px 0 6px; display: grid; justify-items: center; gap: 12px; }
+  .done .hand { font-size: 30px; color: var(--muted); transform: rotate(-2deg); }
+  .done h2 { font-size: clamp(30px, 5vw, 46px); letter-spacing: -0.04em; max-width: 16em; }
+  .done p { margin: 0; max-width: 32em; color: var(--ink-2); font-size: 16.5px; }
+  .dstats { display: flex; gap: 28px; margin-top: 6px; }
+  .dstats b { display: block; font: 800 34px/1 var(--font-display); letter-spacing: -0.03em; }
+  .dstats small { color: var(--muted); font-weight: 600; font-size: 13px; }
+  .dlv { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 8px; width: min(100%, 420px); }
+  .dlv li { display: grid; grid-template-columns: 12px 1fr auto auto; gap: 10px; align-items: center; padding: 10px 14px; border-radius: 12px; background: var(--paper); text-align: left; font-weight: 600; font-size: 14.5px; }
+  .dlv li i { width: 12px; height: 12px; border-radius: 4px; background: var(--c); border: 1.5px solid var(--ink); }
+  .dlv li b { font: 800 20px var(--font-display); }
+  .dlv li em { font: 700 12.5px var(--font-mono); font-style: normal; } .dlv li em.up { color: var(--good); } .dlv li em.down { color: var(--bad); }
+  .dbtns { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
 </style>
 <script src="js/config.js"></script>
 <script src="js/sync.js"></script>
+<script src="js/menu.js"></script>
 </head>
 <body class="app">
 
@@ -121,6 +139,7 @@
         <ul id="pickList" role="listbox" hidden></ul>
       </div>
     </div>
+    <div class="reveal" id="reveal" aria-live="polite"></div>
     <section class="acard" id="acard" aria-live="polite"></section>
     <button class="pencil" type="button" id="pencil" aria-pressed="false" aria-label="Scratchpad" title="Scratchpad">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25Zm17.7-10.2a1 1 0 0 0 0-1.42l-2.33-2.33a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.83-1.83Z"/></svg>
@@ -129,7 +148,7 @@
 </main>
 
 <footer class="pagefoot">
-  <div class="wrap">Answer as many as you like and leave whenever you want. Your levels update with every answer.</div>
+  <div class="wrap">Answer until all your levels are revealed, or leave whenever you want. Your levels update with every answer.</div>
 </footer>
 
 <script src="data/units.js"></script>
@@ -166,10 +185,43 @@
   function start() {
     const codes = scopeCodes();
     if (!codes.length) { card.innerHTML = '<div class="empty"><h2>Add a subject first</h2><p>The diagnostic builds its questions from the notes you upload.</p><a class="btn btn-calm" href="subject.html">Go to your subjects</a></div>'; return; }
-    S = new G.Session(codes); ask();
+    S = new G.Session(codes); session = { n: 0, t0: Date.now(), wasRevealed: hidden(codes) === 0, done: false, before: levelsNow(codes) }; ask();
+  }
+
+  /* ---------- knowing when there's enough to go on ---------- */
+  let session = null;
+  function hidden(codes) { let n = 0; codes.forEach(c => { const s = G.subjectFor(c); if (s) s.U.weekList.forEach(w => { const L = G.weekLevel(c, w.week); if (L.v == null || L.n < 2) n++; }); }); return n; }
+  function total(codes) { return codes.reduce((t, c) => { const s = G.subjectFor(c); return t + (s ? s.U.weekList.length : 0); }, 0); }
+  function levelsNow(codes) { const o = {}; codes.forEach(c => { const s = G.subjectFor(c); if (!s) return; const v = s.U.weekList.map(w => G.weekLevel(c, w.week).v).filter(x => x != null); o[c] = v.length ? Math.round(v.reduce((a, b) => a + b, 0) / v.length) : null; }); return o; }
+  function paintReveal() {
+    const codes = scopeCodes(), all = total(codes), left = hidden(codes), el = $('#reveal'); if (!el || !all) return;
+    const pct = Math.round((all - left) / all * 100);
+    el.innerHTML = '<span>' + (left ? 'Levels revealed: <b>' + (all - left) + ' of ' + all + '</b> weeks' : 'All <b>' + all + '</b> week levels revealed') + '</span><div class="rbar"><i style="width:' + pct + '%"></i></div>';
+  }
+  function after() {
+    session.n++;
+    const codes = scopeCodes();
+    const ready = hidden(codes) === 0 && (!session.wasRevealed || session.n >= 10);
+    if (ready && !session.done) { session.done = true; paintReveal(); return showDone(codes); }
+    ask();
+  }
+  function showDone(codes) {
+    Q = null;
+    const mins = Math.max(1, Math.round((Date.now() - session.t0) / 60000)), now = levelsNow(codes);
+    const rows = codes.map(c => { const s = G.subjectFor(c), b = session.before[c], v = now[c]; if (!s || v == null) return '';
+      const d = b != null ? v - b : null;
+      return '<li style="--c:' + s.colour + '"><i></i><span>' + esc(s.U.name) + '</span><b>' + v + '</b>' + (d ? '<em class="' + (d > 0 ? 'up' : 'down') + '">' + (d > 0 ? '+' : '') + d + '</em>' : '') + '</li>'; }).join('');
+    card.innerHTML = '<div class="done enter"><span class="hand">' + (session.wasRevealed ? 'levels updated' : 'well done!') + '</span>' +
+      '<h2>' + (session.wasRevealed ? 'Your levels are up to date.' : 'You\'ve revealed all your levels!') + '</h2>' +
+      '<p>Now it\'s time to learn. Practise the skills picked for you, and your levels will keep climbing. You can come back to the arena any time.</p>' +
+      '<div class="dstats"><div><b>' + session.n + '</b><small>questions</small></div><div><b>' + mins + '</b><small>minute' + (mins === 1 ? '' : 's') + '</small></div></div>' +
+      (rows ? '<ul class="dlv">' + rows + '</ul>' : '') +
+      '<div class="dbtns"><a class="btn btn-yellow" href="recommendations.html">Start learning</a><a class="btn" href="diagnostic.html">See my levels</a></div>' +
+      '<button type="button" class="dunno" id="more">Keep answering questions ›</button></div>';
   }
 
   function ask() {
+    paintReveal();
     const it = S.next(); Q = it.q; chosen = null;
     let h = '<div class="qbody enter">';
     if (Q.type === 'fill_gap' || (Q.type === 'type_answer' && /_{3,}/.test(Q.prompt))) {
@@ -196,7 +248,7 @@
     let r;
     if (Q.type === 'fill_gap' || Q.type === 'type_answer') { const v = $('#aIn').value; if (!v.trim()) return; r = (Q.answers || []).some(a => G.norm(a) === G.norm(v)) ? 1 : 0; }
     else { if (chosen == null) return; r = chosen === Q.answer ? 1 : 0; }
-    S.answer(r); ask();
+    S.answer(r); after();
   }
 
   /* scratchpad */
@@ -227,7 +279,8 @@
     const o = t.closest('[data-opt]');
     if (o) { chosen = +o.dataset.opt; card.querySelectorAll('.opt').forEach(b => b.setAttribute('aria-pressed', String(b === o))); $('#submit').disabled = false; return; }
     if (t.closest('#submit')) { submit(); return; }
-    if (t.closest('#dunno')) { S.answer(-1); ask(); return; }
+    if (t.closest('#dunno')) { S.answer(-1); after(); return; }
+    if (t.closest('#more')) { ask(); return; }
     if (t.closest('#pencil')) { togglePad(!padOn); return; }
     if (t.closest('#pickBtn')) { const l = $('#pickList'); l.hidden = !l.hidden; $('#pickBtn').setAttribute('aria-expanded', String(!l.hidden)); return; }
     const sc = t.closest('[data-scope]');

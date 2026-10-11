@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Practice · Lamplight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Caveat:wght@600;700&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/lamplight.css">
+<style>
+  .navlinks a[aria-current="page"] { background: var(--hl-yellow); color: #141414; }
+  .avatar { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--ink); background: var(--hl-pink); color: #141414; display: grid; place-items: center; font: 800 17px var(--font-display); text-decoration: none; box-shadow: 0 3px 0 var(--shadow); }
+  .icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--line); background: var(--card); display: grid; place-items: center; cursor: pointer; color: var(--ink); }
+  .icon-btn:hover { border-color: var(--ink); }
+  main { --c: var(--hl-yellow); }
+  .subnav { position: static; }
+
+  .crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 24px 0 6px; font-size: 14px; color: var(--muted); font-weight: 600; }
+  .crumbs a { color: var(--ink-2); text-decoration: none; }
+  .crumbs a:hover { text-decoration: underline; }
+  .crumbs .sep { color: var(--line); }
+  .skillhead { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 22px; }
+  .skillhead h1 { font-size: clamp(28px, 3.6vw, 44px); letter-spacing: -0.035em; line-height: 1.05; }
+  .skillhead .code { font: 700 13px var(--font-mono); padding: 6px 10px; border-radius: 9px; border: 2px solid var(--ink); background: var(--c); color: #141414; }
+
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 24px; align-items: start; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .side { order: -1; } }
+
+  .qcard { background: var(--card); border: 2.5px solid var(--ink); border-radius: 24px; box-shadow: 0 8px 0 var(--shadow); padding: 26px 28px 24px; min-height: 380px; display: flex; flex-direction: column; gap: 18px; }
+  @media (max-width: 600px) { .qcard { padding: 20px 16px; } }
+  .qtop { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .qtype { font-size: 12.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); display: inline-flex; gap: 8px; align-items: center; }
+  .qtype i { width: 10px; height: 10px; border-radius: 3px; background: var(--c); border: 1.5px solid var(--ink); }
+  .learn { background: none; border: 2px solid var(--line); border-radius: 99px; padding: 7px 13px; font-weight: 700; font-size: 13.5px; cursor: pointer; display: inline-flex; gap: 7px; align-items: center; color: var(--ink); }
+  .learn:hover { border-color: var(--ink); }
+  .passage { background: var(--paper); border-left: 4px solid var(--c); border-radius: 0 12px 12px 0; padding: 14px 16px; font-size: 16px; line-height: 1.55; color: var(--ink-2); }
+  .prompt { font: 700 clamp(19px, 2.2vw, 23px)/1.35 var(--font-display); letter-spacing: -0.015em; margin: 0; }
+
+  .opts { display: grid; gap: 10px; }
+  .opt { text-align: left; padding: 14px 16px; border-radius: 13px; border: 2px solid var(--line); background: var(--paper); font-weight: 600; font-size: 16px; cursor: pointer; display: flex; gap: 12px; align-items: center; color: var(--ink); line-height: 1.35; }
+  .opt:hover { border-color: var(--muted); }
+  .opt .k { width: 28px; height: 28px; flex: none; border-radius: 8px; border: 2px solid var(--line); display: grid; place-items: center; font: 700 12px var(--font-mono); color: var(--muted); }
+  .opt[aria-pressed="true"] { border-color: var(--ink); background: color-mix(in srgb, var(--c) 30%, var(--card)); }
+  .opt[aria-pressed="true"] .k { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .opt.right { border-color: var(--good); background: var(--good-soft); }
+  .opt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+
+  .gapline { font-size: 18px; line-height: 2.2; }
+  .gapline input, .typein { font: 700 17px var(--font-body); padding: 8px 12px; border-radius: 10px; border: 2px solid var(--ink); background: var(--paper); color: var(--ink); min-width: 160px; }
+  .typein { width: min(100%, 420px); padding: 12px 14px; }
+  .gapline input:focus, .typein:focus { outline: none; box-shadow: 0 3px 0 var(--shadow); }
+
+  .bank { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; border-radius: 14px; border: 2px dashed var(--line); min-height: 58px; background: var(--paper); }
+  .chip { padding: 9px 13px; border-radius: 11px; border: 2px solid var(--ink); background: var(--card); font-weight: 600; font-size: 15px; cursor: grab; box-shadow: 0 2px 0 var(--shadow); color: var(--ink); text-align: left; line-height: 1.3; }
+  .chip[aria-pressed="true"] { background: var(--c); color: #141414; }
+  .pairs { display: grid; gap: 10px; grid-auto-rows: min-content; align-content: start; }
+  .pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto; gap: 10px; align-items: stretch; }
+  @media (max-width: 560px) { .pair { grid-template-columns: 1fr; } }
+  .pair .left { padding: 12px 14px; border-radius: 12px; background: var(--paper-2); font-weight: 700; font-size: 15px; display: flex; align-items: center; }
+  .slot { min-height: 50px; border-radius: 12px; border: 2px dashed var(--muted); display: flex; align-items: center; padding: 6px; cursor: pointer; background: var(--card); }
+  .slot.over { border-color: var(--ink); background: color-mix(in srgb, var(--c) 25%, var(--card)); }
+  .slot .chip { width: 100%; }
+  .slot.vacant::after { content: "drop here"; color: var(--muted); font-size: 13px; padding-left: 8px; }
+  .slot.ok { border: 2px solid var(--good); } .slot.no { border: 2px solid var(--bad); }
+
+  .olist { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .olist li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--ink); background: var(--card); font-weight: 600; box-shadow: 0 2px 0 var(--shadow); cursor: grab; }
+  .olist li.dragging { opacity: .4; }
+  .olist .n { font: 700 12px var(--font-mono); width: 26px; height: 26px; border-radius: 8px; background: var(--paper-2); display: grid; place-items: center; flex: none; }
+  .olist .txt { flex: 1; line-height: 1.35; }
+  .olist .mv { display: flex; gap: 4px; }
+  .olist .mv button { width: 30px; height: 30px; border-radius: 8px; border: 2px solid var(--line); background: var(--paper); cursor: pointer; font-weight: 800; color: var(--ink); }
+  .olist .mv button:hover { border-color: var(--ink); }
+  .olist .mv button:disabled { opacity: .3; cursor: default; }
+
+  .sorttbl { width: 100%; border-collapse: collapse; }
+  .sortwrap { overflow-x: auto; border: 2px solid var(--ink); border-radius: 14px; }
+  .sorttbl th { background: var(--ink); color: var(--paper); font-size: 13px; padding: 10px 12px; text-align: center; }
+  .sorttbl th:first-child { text-align: left; }
+  .sorttbl td { border-top: 1.5px solid var(--line); padding: 10px 12px; font-size: 15px; }
+  .sorttbl td.r { text-align: center; width: 110px; }
+  .sorttbl input { width: 20px; height: 20px; accent-color: var(--ink); cursor: pointer; }
+  .sorttbl tr.ok td:first-child { box-shadow: inset 4px 0 0 var(--good); } .sorttbl tr.no td:first-child { box-shadow: inset 4px 0 0 var(--bad); }
+
+  .sentence { font-size: 19px; line-height: 2.1; }
+  .word { background: none; border: 0; padding: 2px 3px; margin: 0 1px; border-radius: 6px; font: inherit; cursor: pointer; color: var(--ink); }
+  .word:hover { background: var(--paper-2); }
+  .word[aria-pressed="true"] { background: var(--hl-yellow); color: #141414; text-decoration: underline wavy var(--bad); text-underline-offset: 4px; }
+  .fixrow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-weight: 600; }
+
+  .qfoot { margin-top: auto; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .qfoot .hint { font-size: 13.5px; color: var(--muted); }
+
+  .fb { border-radius: 16px; padding: 16px 18px; display: grid; gap: 10px; border: 2px solid var(--ink); }
+  .fb.ok { background: var(--good-soft); border-color: var(--good); }
+  .fb.no { background: var(--bad-soft); border-color: var(--bad); }
+  .fb h3 { font-size: 22px; letter-spacing: -0.02em; display: flex; align-items: center; gap: 10px; }
+  .fb.ok h3 { color: var(--good); } .fb.no h3 { color: var(--bad); }
+  .fb .ans { font-weight: 700; }
+  .fb p { margin: 0; color: var(--ink-2); font-size: 15.5px; }
+  .fb .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .fb .hand { font-size: 22px; color: var(--muted); }
+
+  /* sidebar */
+  .side { display: grid; gap: 12px; position: sticky; top: 110px; }
+  @media (max-width: 900px) { .side { position: static; grid-template-columns: repeat(3, 1fr); } .side .upnext { display: none; } .side .stat b.timer { font-size: 16px; } .stat h4 { font-size: 10px; letter-spacing: .04em; } }
+  .stat { border: 2px solid var(--ink); border-radius: 16px; overflow: hidden; background: var(--card); text-align: center; box-shadow: 0 3px 0 var(--shadow); }
+  .stat h4 { margin: 0; padding: 7px 8px; font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #141414; }
+  .stat b { display: block; padding: 10px 8px 12px; font: 800 34px/1 var(--font-display); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  @media (max-width: 900px) { .stat b { font-size: 26px; } }
+  .stat.q h4 { background: var(--hl-green); } .stat.t h4 { background: var(--hl-blue); } .stat.s h4 { background: var(--hl-orange); }
+  .stat .timer { font-family: var(--font-mono); font-size: 24px; letter-spacing: 0; }
+  .stat .bar { height: 8px; margin: 0 12px 12px; border-radius: 99px; background: var(--paper-2); overflow: hidden; }
+  .stat .bar i { display: block; height: 100%; background: var(--good); transition: width .6s cubic-bezier(.3,.8,.3,1); }
+  .stat .zone { font-size: 12px; color: var(--muted); font-weight: 600; margin: -6px 0 10px; }
+  .bump { animation: bump .45s cubic-bezier(.3,1.6,.5,1); }
+  @keyframes bump { 40% { transform: scale(1.18); } }
+  .upnext { border: 2px solid var(--line); border-radius: 16px; background: var(--card); padding: 12px; display: grid; gap: 4px; }
+  .upnext h5 { margin: 2px 4px 6px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .upnext a { display: flex; justify-content: space-between; gap: 8px; padding: 8px 8px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600; }
+  .upnext a:hover { background: var(--paper-2); }
+  .upnext a[aria-current="page"] { background: var(--c); color: #141414; }
+  .upnext a span.s { font: 700 12px var(--font-mono); color: var(--muted); }
+  .upnext a[aria-current="page"] span.s { color: #141414; }
+
+  /* learn with an example */
+  .ex-dialog { border: 2.5px solid var(--ink); border-radius: 24px; padding: 0; width: min(94vw, 620px); background: var(--card); color: var(--ink); box-shadow: 0 10px 0 var(--shadow); }
+  .ex-dialog::backdrop { background: rgba(20, 20, 20, .45); }
+  .ex-dialog .in { padding: 26px; display: grid; gap: 14px; max-height: 80vh; overflow: auto; }
+  .ex-dialog h2 { font-size: 30px; letter-spacing: -0.035em; }
+  .ex-dialog .hand { font-size: 24px; color: var(--muted); }
+  .ex-dialog .step { border-left: 4px solid var(--c); padding: 6px 0 6px 14px; }
+  .ex-dialog .step b { display: block; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+
+  .mastered { text-align: center; display: grid; gap: 14px; justify-items: center; padding: 20px 0; }
+  .mastered .stampbig { font: 800 34px var(--font-display); color: var(--good); border: 4px solid var(--good); border-radius: 14px; padding: 8px 20px; transform: rotate(-6deg); }
+  .mastered h2 { font-size: 36px; letter-spacing: -0.035em; }
+  .mastered .row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .confetti { position: fixed; inset: 0; pointer-events: none; z-index: 80; overflow: hidden; }
+  .confetti i { position: absolute; top: -20px; width: 12px; height: 18px; border-radius: 3px; border: 1.5px solid var(--ink); animation: fall 1.6s cubic-bezier(.3,.6,.6,1) forwards; }
+  @keyframes fall { to { transform: translateY(110vh) rotate(540deg); } }
+  .empty { padding: 60px 20px; text-align: center; color: var(--muted); }
+  .pagefoot { margin-top: 60px; border-top: 2px solid var(--ink); padding-block: 24px 40px; color: var(--muted); font-size: 14px; }
+</style>
+<script src="js/config.js"></script>
+<script src="js/sync.js"></script>
+</head>
+<body class="app">
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="bar">
+      <a class="brand" href="index.html" aria-label="Lamplight home">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 14 16 4l8 10Z" fill="var(--hl-yellow)" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><path d="M11 17 5 29h22l-6-12Z" fill="var(--hl-yellow)" opacity=".45"/><circle cx="16" cy="15.5" r="2" fill="var(--ink)"/></svg>
+        Lamplight
+      </a>
+      <nav class="navlinks" aria-label="Main">
+        <a href="index.html">Home</a>
+        <a href="subject.html" aria-current="page">Learning</a>
+        <a href="diagnostic.html">Diagnostic</a>
+        <a href="analytics.html">Analytics</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn" type="button" id="lights" aria-label="Turn lights off" title="Lights off">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
+        </button>
+        <a class="avatar" href="account.html" aria-label="Your account">A</a>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="subnav" id="subnav" data-current="unit" data-unit=""></div>
+
+<main class="wrap" id="main">
+  <nav class="crumbs" id="crumbs" aria-label="Breadcrumb"></nav>
+  <div class="skillhead"><span class="code" id="skCode"></span><h1 id="skName">Practice</h1></div>
+  <div class="layout">
+    <section class="qcard" id="qcard" aria-live="polite"></section>
+    <aside class="side" aria-label="Your progress on this skill">
+      <div class="stat q"><h4>Questions answered</h4><b id="stQ">0</b></div>
+      <div class="stat t"><h4>Time elapsed</h4><b class="timer" id="stT">00:00:00</b></div>
+      <div class="stat s"><h4>SmartScore <span style="font-weight:600;text-transform:none;letter-spacing:0">out of 100</span></h4><b id="stS">0</b><div class="bar"><i id="stBar"></i></div><div class="zone" id="stZone">warming up</div></div>
+      <div class="upnext" id="upnext"></div>
+    </aside>
+  </div>
+</main>
+
+<dialog class="ex-dialog" id="exDlg"><div class="in" id="exBody"></div></dialog>
+
+<footer class="pagefoot"><div class="wrap">Questions written from your own study notes. Progress saves in this browser for now.</div></footer>
+
+<script src="data/units.js"></script>
+<script src="js/account.js"></script>
+<script>
+  /* tell the tab bar which unit we're in, before it draws */
+  (function () { var id = decodeURIComponent(location.hash.slice(1)); var code = id.split('-')[0]; document.getElementById('subnav').setAttribute('data-unit', code); })();
+</script>
+<script src="js/subnav.js"></script>
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = window.Lamplight.esc;
+  const UNITS = window.LAMPLIGHT_UNITS || {};
+  const TYPE_NAMES = { mc: 'Multiple choice', case: 'Read the case', fill_gap: 'Fill the gap', type_answer: 'Type the answer', match: 'Drag to match', order: 'Put in order', sort: 'Sort it', fix_error: 'Fix the error', analogy: 'Analogy' };
+  const norm = s => String(s || '').toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+  const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+  /* ---------- find the skill ---------- */
+  function findSkill(id) {
+    for (const code in UNITS) for (const w of UNITS[code].weekList) for (let i = 0; i < w.skills.length; i++) if (w.skills[i].id === id) return { unit: UNITS[code], week: w, skill: w.skills[i], idx: i };
+    return null;
+  }
+  function firstSkill() { const u = UNITS[Object.keys(UNITS)[0]]; return u && u.weekList[0].skills[0].id; }
+
+  let ctx, bank, qi, Q, state, answered, secs, timer, locked;
+  const P = () => window.Lamplight.progress();
+
+  function start() {
+    let id = decodeURIComponent(location.hash.slice(1));
+    ctx = findSkill(id);
+    if (!ctx) { const f = firstSkill(); if (f) { location.replace('#' + f); return; } $('#qcard').innerHTML = '<div class="empty">No questions yet. Upload a week on your subject page first.</div>'; return; }
+    const subs = window.Lamplight.subjects(); const sub = subs.find(s => s.id === ctx.unit.code || s.code === ctx.unit.code);
+    $('#main').style.setProperty('--c', sub ? sub.colour : 'var(--hl-yellow)');
+    const [w, n] = ctx.skill.id.split('-')[1].split('.');
+    $('#crumbs').innerHTML = '<a href="subject.html#' + esc(sub ? sub.id : ctx.unit.code) + '">' + esc(ctx.unit.name) + '</a><span class="sep">›</span><span>Week ' + w + ': ' + esc(ctx.week.topic) + '</span>';
+    $('#skCode').textContent = ctx.unit.code + ' ' + w + '.' + n;
+    $('#skName').textContent = ctx.skill.name;
+    document.title = ctx.skill.name + ' · Lamplight';
+    const pr = P()[ctx.skill.id] || { score: 0, answered: 0, correct: 0, seconds: 0 };
+    answered = 0; secs = 0;
+    bank = shuffle(ctx.skill.questions.map((q, i) => i)); qi = 0;
+    setScore(pr.score, false);
+    $('#stQ').textContent = pr.answered || 0;
+    renderUpNext();
+    clearInterval(timer);
+    timer = setInterval(() => { if (!document.hidden) { secs++; paintTime(); } }, 1000); paintTime();
+    if (pr.score >= 100) showMastered(true); else next();
+  }
+  function paintTime() {
+    const t = (P()[ctx.skill.id]?.seconds || 0) + secs;
+    const h = String(Math.floor(t / 3600)).padStart(2, '0'), m = String(Math.floor(t / 60) % 60).padStart(2, '0'), s = String(t % 60).padStart(2, '0');
+    $('#stT').textContent = h + ':' + m + ':' + s;
+  }
+  function renderUpNext() {
+    const pr = P();
+    $('#upnext').innerHTML = '<h5>Week ' + ctx.week.week + ' skills</h5>' + ctx.week.skills.map(s => {
+      const sc = pr[s.id]?.score || 0;
+      return '<a href="#' + s.id + '"' + (s.id === ctx.skill.id ? ' aria-current="page"' : '') + '><span>' + esc(s.name) + '</span><span class="s">' + (sc >= 100 ? '100 ★' : sc) + '</span></a>';
+    }).join('');
+  }
+
+  let score = 0;
+  function setScore(v, animate = true) {
+    score = v; const el = $('#stS'); el.textContent = v;
+    $('#stBar').style.width = v + '%';
+    $('#stZone').textContent = v >= 100 ? 'mastered' : v >= 90 ? 'the challenge zone' : v >= 80 ? 'excellent' : v >= 50 ? 'getting there' : 'warming up';
+    if (animate) { el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
+  }
+
+  /* ---------- next question ---------- */
+  function next() {
+    if (qi >= bank.length) { bank = shuffle(bank); qi = 0; }
+    Q = ctx.skill.questions[bank[qi++]]; locked = false; state = {};
+    const C = $('#qcard');
+    let h = '<div class="qtop"><span class="qtype"><i></i>' + TYPE_NAMES[Q.type] + '</span><button class="learn" type="button" id="learnBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z"/></svg>Learn with an example</button></div>';
+    if (Q.passage) h += '<div class="passage">' + esc(Q.passage) + '</div>';
+    h += '<p class="prompt">' + esc(Q.prompt) + '</p><div id="area"></div>';
+    h += '<div class="qfoot"><button class="btn btn-yellow" type="button" id="submit">Submit</button><span class="hint" id="hint"></span></div><div id="fbwrap"></div>';
+    C.innerHTML = h;
+    const A = $('#area');
+    const t = Q.type;
+    if (t === 'mc' || t === 'case' || t === 'analogy') {
+      state.order = shuffle(Q.options.map((_, i) => i));
+      A.innerHTML = '<div class="opts">' + state.order.map((oi, k) => '<button type="button" class="opt" data-oi="' + oi + '" aria-pressed="false"><span class="k">' + 'ABCD'[k] + '</span><span>' + esc(Q.options[oi]) + '</span></button>').join('') + '</div>';
+      A.addEventListener('click', e => { const b = e.target.closest('.opt'); if (!b || locked) return; A.querySelectorAll('.opt').forEach(x => x.setAttribute('aria-pressed', x === b)); state.sel = +b.dataset.oi; });
+      $('#hint').textContent = 'Pick one, then submit. Keys A to D work too.';
+    } else if (t === 'fill_gap') {
+      const parts = esc(Q.text).split('___');
+      A.innerHTML = '<div class="gapline">' + parts[0] + '<input id="gapIn" autocomplete="off" aria-label="Your answer">' + (parts[1] || '') + '</div>';
+      setTimeout(() => $('#gapIn').focus(), 50);
+    } else if (t === 'type_answer') {
+      A.innerHTML = '<input class="typein" id="typeIn" autocomplete="off" placeholder="Type your answer" aria-label="Your answer">';
+      setTimeout(() => $('#typeIn').focus(), 50);
+    } else if (t === 'match') {
+      state.place = Q.pairs.map(() => null); state.pick = null;
+      state.bank = shuffle(Q.pairs.map((p, i) => i));
+      drawMatch();
+      $('#hint').textContent = 'Tap a card, then tap where it goes. Or drag it.';
+    } else if (t === 'order') {
+      let o; do { o = shuffle(Q.items.map((_, i) => i)); } while (Q.items.length > 1 && o.every((v, i) => v === i));
+      state.ord = o; drawOrder();
+      $('#hint').textContent = 'Drag or use the arrows to reorder.';
+    } else if (t === 'sort') {
+      state.sel = Q.items.map(() => null);
+      A.innerHTML = '<div class="sortwrap"><table class="sorttbl"><thead><tr><th>Example</th>' + Q.categories.map(c => '<th>' + esc(c) + '</th>').join('') + '</tr></thead><tbody>' +
+        Q.items.map((it, i) => '<tr data-i="' + i + '"><td>' + esc(it.text) + '</td>' + Q.categories.map((c, ci) => '<td class="r"><input type="radio" name="s' + i + '" value="' + ci + '" aria-label="' + esc(it.text) + ': ' + esc(c) + '"></td>').join('') + '</tr>').join('') + '</tbody></table></div>';
+      A.addEventListener('change', e => { const r = e.target; if (r.name) state.sel[+r.name.slice(1)] = +r.value; });
+    } else if (t === 'fix_error') {
+      const toks = Q.sentence.split(/(\s+)/);
+      A.innerHTML = '<div class="sentence">' + toks.map(tk => /\s+/.test(tk) ? tk : '<button type="button" class="word" aria-pressed="false">' + esc(tk) + '</button>').join('') + '</div><div class="fixrow" id="fixrow" hidden><span>Replace <b id="fixWord"></b> with</span><input class="typein" id="fixIn" style="width:220px" autocomplete="off" aria-label="Correct word"></div>';
+      A.addEventListener('click', e => { const b = e.target.closest('.word'); if (!b || locked) return; A.querySelectorAll('.word').forEach(x => x.setAttribute('aria-pressed', x === b)); state.word = b.textContent; $('#fixrow').hidden = false; $('#fixWord').textContent = '"' + b.textContent + '"'; $('#fixIn').focus(); });
+      $('#hint').textContent = 'Click the wrong word, then type the right one.';
+    }
+    $('#submit').addEventListener('click', submit);
+    $('#learnBtn').addEventListener('click', learn);
+  }
+
+  /* match */
+  function chipHTML(i, inSlot) { return '<button type="button" class="chip" draggable="true" data-ci="' + i + '"' + (state.pick === i && !inSlot ? ' aria-pressed="true"' : '') + '>' + esc(Q.pairs[i][1]) + '</button>'; }
+  function drawMatch() {
+    const A = $('#area');
+    const free = state.bank.filter(i => !state.place.includes(i));
+    A.innerHTML = '<div class="bank" id="mbank" aria-label="Cards to place">' + (free.length ? free.map(i => chipHTML(i)).join('') : '<span style="color:var(--muted);font-size:13.5px;padding:8px">All placed. Tap a card to move it back.</span>') + '</div>' +
+      '<div class="pairs" style="margin-top:12px">' + Q.pairs.map((p, li) => '<div class="pair"><div class="left">' + esc(p[0]) + '</div><div class="slot' + (state.place[li] == null ? ' vacant' : '') + '" data-li="' + li + '" role="button" tabindex="0" aria-label="Slot for ' + esc(p[0]) + '">' + (state.place[li] != null ? chipHTML(state.place[li], true) : '') + '</div></div>').join('') + '</div>';
+    if (A.dataset.wired) return; A.dataset.wired = 1;
+    A.addEventListener('click', e => {
+      if (locked) return;
+      const chip = e.target.closest('.chip'), slot = e.target.closest('.slot');
+      if (chip && !slot) { const i = +chip.dataset.ci; state.pick = state.pick === i ? null : i; drawMatch(); return; }
+      if (slot) {
+        const li = +slot.dataset.li;
+        if (state.pick != null) { const prev = state.place.indexOf(state.pick); if (prev > -1) state.place[prev] = null; state.place[li] = state.pick; state.pick = null; }
+        else if (state.place[li] != null) state.place[li] = null;
+        drawMatch();
+      }
+    });
+    A.addEventListener('dragstart', e => { const c = e.target.closest('.chip'); if (c) { e.dataTransfer.setData('text/plain', c.dataset.ci); } });
+    A.addEventListener('dragover', e => { const s = e.target.closest('.slot'); if (s) { e.preventDefault(); s.classList.add('over'); } });
+    A.addEventListener('dragleave', e => { const s = e.target.closest('.slot'); if (s) s.classList.remove('over'); });
+    A.addEventListener('drop', e => {
+      const s = e.target.closest('.slot'); if (!s || locked) return; e.preventDefault();
+      const i = +e.dataTransfer.getData('text/plain'), li = +s.dataset.li;
+      const prev = state.place.indexOf(i); if (prev > -1) state.place[prev] = null;
+      state.place[li] = i; state.pick = null; drawMatch();
+    });
+  }
+
+  /* order */
+  function drawOrder() {
+    const A = $('#area');
+    A.innerHTML = '<ol class="olist" id="olist">' + state.ord.map((ii, k) => '<li draggable="true" data-k="' + k + '"><span class="n">' + (k + 1) + '</span><span class="txt">' + esc(Q.items[ii]) + '</span><span class="mv"><button type="button" data-up="' + k + '" aria-label="Move up"' + (k === 0 ? ' disabled' : '') + '>↑</button><button type="button" data-dn="' + k + '" aria-label="Move down"' + (k === state.ord.length - 1 ? ' disabled' : '') + '>↓</button></span></li>').join('') + '</ol>';
+    if (A.dataset.wired) return; A.dataset.wired = 1;
+    const swap = (a, b) => { [state.ord[a], state.ord[b]] = [state.ord[b], state.ord[a]]; drawOrder(); };
+    A.addEventListener('click', e => { if (locked) return; const u = e.target.closest('[data-up]'), d = e.target.closest('[data-dn]'); if (u) swap(+u.dataset.up, +u.dataset.up - 1); if (d) swap(+d.dataset.dn, +d.dataset.dn + 1); });
+    let from = null;
+    A.addEventListener('dragstart', e => { const li = e.target.closest('li'); if (li) { from = +li.dataset.k; li.classList.add('dragging'); e.dataTransfer.setData('text/plain', from); } });
+    A.addEventListener('dragend', e => { const li = e.target.closest('li'); if (li) li.classList.remove('dragging'); });
+    A.addEventListener('dragover', e => { if (e.target.closest('li')) e.preventDefault(); });
+    A.addEventListener('drop', e => { const li = e.target.closest('li'); if (!li || from == null || locked) return; e.preventDefault(); const to = +li.dataset.k; const [m] = state.ord.splice(from, 1); state.ord.splice(to, 0, m); from = null; drawOrder(); });
+  }
+
+  /* ---------- checking ---------- */
+  function answerText() {
+    const t = Q.type;
+    if (t === 'mc' || t === 'case' || t === 'analogy') return Q.options[Q.answer];
+    if (t === 'fill_gap' || t === 'type_answer') return Q.answers[0];
+    if (t === 'match') return Q.pairs.map(p => p[0] + ' → ' + p[1]).join('; ');
+    if (t === 'order') return Q.items.map((x, i) => (i + 1) + '. ' + x).join('  ');
+    if (t === 'sort') return Q.categories.map((c, ci) => c + ': ' + Q.items.filter(it => it.cat === ci).map(it => it.text).join(', ')).join('. ');
+    if (t === 'fix_error') return '"' + Q.wrong + '" should be "' + Q.correct + '"';
+    return '';
+  }
+  function check() {
+    const t = Q.type;
+    if (t === 'mc' || t === 'case' || t === 'analogy') { if (state.sel == null) return null; return state.sel === Q.answer; }
+    if (t === 'fill_gap' || t === 'type_answer') { const v = (t === 'fill_gap' ? $('#gapIn') : $('#typeIn')).value; if (!v.trim()) return null; return Q.answers.some(a => norm(a) === norm(v)); }
+    if (t === 'match') { if (state.place.some(p => p == null)) return null; return state.place.every((ci, li) => ci === li); }
+    if (t === 'order') return state.ord.every((v, i) => v === i);
+    if (t === 'sort') { if (state.sel.some(v => v == null)) return null; return state.sel.every((v, i) => v === Q.items[i].cat); }
+    if (t === 'fix_error') { if (!state.word) return null; const v = $('#fixIn').value; if (!v.trim()) return null; return norm(state.word) === norm(Q.wrong) && norm(v) === norm(Q.correct); }
+    return false;
+  }
+  function markUp(ok) {
+    const t = Q.type, A = $('#area');
+    if (t === 'mc' || t === 'case' || t === 'analogy') A.querySelectorAll('.opt').forEach(b => { const oi = +b.dataset.oi; if (oi === Q.answer) b.classList.add('right'); else if (oi === state.sel) b.classList.add('wrong'); });
+    if (t === 'match') A.querySelectorAll('.slot').forEach(s => { const li = +s.dataset.li; s.classList.add(state.place[li] === li ? 'ok' : 'no'); });
+    if (t === 'sort') A.querySelectorAll('tbody tr').forEach(r => { const i = +r.dataset.i; r.classList.add(state.sel[i] === Q.items[i].cat ? 'ok' : 'no'); });
+    A.querySelectorAll('input,button').forEach(x => { if (!x.closest('.fb')) x.disabled = true; });
+  }
+
+  function gain(s, ok) {
+    if (ok) return Math.min(100, s + (s < 40 ? 16 : s < 60 ? 11 : s < 80 ? 9 : s < 90 ? 5 : 4));
+    return Math.max(0, s - (s < 40 ? 4 : s < 80 ? 8 : 12));
+  }
+
+  function submit() {
+    if (locked) return;
+    const ok = check();
+    if (ok === null) { $('#hint').textContent = Q.type === 'fix_error' && !state.word ? 'Click the wrong word first.' : 'Finish your answer first.'; $('#hint').style.color = 'var(--bad)'; return; }
+    locked = true; markUp(ok);
+    const all = P(); const pr = all[ctx.skill.id] || { score: 0, answered: 0, correct: 0, seconds: 0 };
+    const before = pr.score;
+    pr.score = gain(pr.score, ok); pr.answered++; if (ok) pr.correct++;
+    pr.seconds = (pr.seconds || 0) + secs; secs = 0; pr.last = Date.now();
+    pr.missed = pr.missed || {}; if (!ok) { const k = ctx.skill.questions.indexOf(Q); pr.missed[k] = (pr.missed[k] || 0) + 1; }
+    all[ctx.skill.id] = pr; window.Lamplight.saveProgress(all);
+    const log = (() => { try { return JSON.parse(localStorage.getItem('lamplight:log') || '[]'); } catch (e) { return []; } })();
+    log.push({ t: Date.now(), s: ctx.skill.id, ok }); try { localStorage.setItem('lamplight:log', JSON.stringify(log.slice(-3000))); } catch (e) {}
+    setScore(pr.score); $('#stQ').textContent = pr.answered; renderUpNext();
+    $('#submit').hidden = true; $('#hint').textContent = '';
+    const fb = $('#fbwrap');
+    if (ok) {
+      fb.innerHTML = '<div class="fb ok"><h3>' + tick + 'Nice. +' + (pr.score - before) + '</h3><p>' + esc(Q.explanation) + '</p><div class="row"><span class="hand">keep the streak going</span><button class="btn btn-small" type="button" id="nextBtn">Next question</button></div></div>';
+    } else {
+      fb.innerHTML = '<div class="fb no"><h3>' + cross + 'Not quite</h3><p>The correct answer is <span class="ans">' + esc(answerText()) + '</span></p><p>' + esc(Q.explanation) + '</p><div class="row"><span class="hand">read it once more, then go again</span><button class="btn btn-small" type="button" id="nextBtn">Got it</button></div></div>';
+    }
+    $('#nextBtn').focus({ preventScroll: true });
+    $('#nextBtn').addEventListener('click', () => { if (pr.score >= 100 && before < 100) showMastered(false); else next(); });
+  }
+
+  const tick = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  const cross = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+
+  function showMastered(already) {
+    const sk = ctx.week.skills, nx = sk[ctx.idx + 1];
+    const subs = window.Lamplight.subjects(); const sub = subs.find(s => s.code === ctx.unit.code);
+    $('#qcard').innerHTML = '<div class="mastered"><span class="stampbig">MASTERED</span><h2>' + esc(ctx.skill.name) + '</h2><p style="color:var(--ink-2);margin:0">' + (already ? 'You\'ve already mastered this one. Practise again to keep it fresh.' : 'SmartScore 100. That skill is yours.') + '</p><div class="row">' +
+      (nx ? '<a class="btn btn-yellow" href="#' + nx.id + '">Next skill: ' + esc(nx.name) + '</a>' : '') +
+      '<a class="btn" href="subject.html#' + esc(sub ? sub.id : ctx.unit.code) + '">Back to ' + esc(ctx.unit.name) + '</a>' + (already ? '<button class="btn" type="button" id="again">Practise anyway</button>' : '') + '</div></div>';
+    if (already) $('#again').addEventListener('click', next); else confetti();
+  }
+  function confetti() {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const box = document.createElement('div'); box.className = 'confetti';
+    const cols = ['var(--hl-yellow)', 'var(--hl-pink)', 'var(--hl-blue)', 'var(--hl-green)', 'var(--hl-orange)'];
+    for (let i = 0; i < 60; i++) { const c = document.createElement('i'); c.style.left = Math.random() * 100 + '%'; c.style.background = cols[i % 5]; c.style.animationDelay = (Math.random() * .5) + 's'; box.appendChild(c); }
+    document.body.appendChild(box); setTimeout(() => box.remove(), 2600);
+  }
+
+  /* learn with an example: a solved question from this skill */
+  function learn() {
+    const pool = ctx.skill.questions.filter(q => q !== Q);
+    const ex = pool.find(q => q.type === 'mc' || q.type === 'case') || pool[0] || Q;
+    const exAnswer = (() => { const keep = Q; Q = ex; const a = answerText(); Q = keep; return a; })();
+    $('#exBody').innerHTML = '<span class="hand">learn with an example</span><h2>' + esc(ctx.skill.name) + '</h2><p style="margin:0;color:var(--ink-2)">' + esc(ctx.skill.summary || '') + '</p>' +
+      (ex.passage ? '<div class="step"><b>The situation</b>' + esc(ex.passage) + '</div>' : '') +
+      '<div class="step"><b>The question</b>' + esc(ex.prompt) + (ex.text ? '<br>' + esc(ex.text) : '') + (ex.sentence ? '<br>' + esc(ex.sentence) : '') + '</div>' +
+      '<div class="step"><b>The answer</b>' + esc(exAnswer) + '</div><div class="step"><b>Why</b>' + esc(ex.explanation) + '</div>' +
+      '<div style="display:flex;justify-content:flex-end"><button class="btn btn-yellow" type="button" id="exClose">Back to my question</button></div>';
+    const d = $('#exDlg'); d.showModal(); $('#exClose').addEventListener('click', () => d.close());
+  }
+
+  document.addEventListener('keydown', e => {
+    if (document.querySelector('dialog[open]')) return;
+    if (e.key === 'Enter') { const n = $('#nextBtn'); if (n && locked) { e.preventDefault(); n.click(); return; } if (!locked && $('#submit') && !(e.target.closest && e.target.closest('.olist,.bank,.slot'))) { e.preventDefault(); submit(); } }
+    if (!locked && Q && ['mc', 'case', 'analogy'].includes(Q.type) && /^[a-dA-D]$/.test(e.key) && e.target.tagName !== 'INPUT') { const b = document.querySelectorAll('.opt')[e.key.toLowerCase().charCodeAt(0) - 97]; if (b) b.click(); }
+  });
+  window.addEventListener('hashchange', () => { document.getElementById('subnav').setAttribute('data-unit', decodeURIComponent(location.hash.slice(1)).split('-')[0]); window.dispatchEvent(new Event('lamplight:subjects')); start(); window.scrollTo(0, 0); });
+  window.addEventListener('beforeunload', () => { if (!ctx || !secs) return; const all = P(); const pr = all[ctx.skill.id]; if (pr) { pr.seconds = (pr.seconds || 0) + secs; window.Lamplight.saveProgress(all); } });
+  $('#lights').addEventListener('click', () => { const d = document.documentElement.getAttribute('data-theme') === 'dark'; if (d) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', 'dark'); });
+  start();
+})();
+</script>
+<script src="js/tour.js"></script>
+</body>
+</html>

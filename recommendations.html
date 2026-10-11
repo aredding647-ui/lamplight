@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Recommendations · Lamplight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Caveat:wght@600;700&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/lamplight.css">
+<style>
+  /* app nav */
+  .navlinks a[aria-current="page"] { background: var(--hl-yellow); color: #141414; }
+  .avatar { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--ink); background: var(--hl-pink); color: #141414; display: grid; place-items: center; font: 800 17px var(--font-display); text-decoration: none; box-shadow: 0 3px 0 var(--shadow); }
+  .icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--line); background: var(--card); display: grid; place-items: center; cursor: pointer; color: var(--ink); }
+  .icon-btn:hover { border-color: var(--ink); }
+
+  /* header */
+  .head { padding-block: 40px 8px; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end; }
+  @media (max-width: 760px) { .head { grid-template-columns: 1fr; } }
+  .head h1 { font-size: clamp(48px, 7vw, 92px); letter-spacing: -0.045em; }
+  .head p { font-size: 19px; color: var(--ink-2); margin: 16px 0 0; max-width: 34em; }
+  .head .hand { font-size: 26px; color: var(--muted); display: inline-block; transform: rotate(-2deg); margin-bottom: 6px; }
+  .streak { display: flex; gap: 12px; align-items: center; background: var(--card); border: 2px solid var(--ink); border-radius: 16px; padding: 12px 16px; box-shadow: 0 3px 0 var(--shadow); }
+  .streak b { font: 800 32px/1 var(--font-display); letter-spacing: -0.03em; }
+  .streak small { display: block; color: var(--muted); font-size: 13px; line-height: 1.2; }
+  .streak .days { display: flex; gap: 4px; margin-left: 6px; }
+  .streak .days i { width: 12px; height: 26px; border-radius: 4px; background: var(--paper-2); border: 1.5px solid var(--line); }
+  .streak .days i.on { background: var(--hl-orange); border-color: var(--ink); }
+
+  /* tonight */
+  .tonight { margin-top: 40px; }
+  .sub { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+  .sub h2 { font-size: 34px; letter-spacing: -0.03em; }
+  .sub .hand { font-size: 24px; color: var(--muted); }
+  .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  @media (max-width: 900px) { .three { grid-template-columns: 1fr; } }
+  .big {
+    position: relative; background: var(--card); border: 2.5px solid var(--ink); border-radius: 22px; padding: 20px;
+    box-shadow: 0 6px 0 var(--shadow); display: flex; flex-direction: column; gap: 12px; text-decoration: none;
+    transition: transform .12s, box-shadow .12s;
+  }
+  .big:hover { transform: translateY(-3px); box-shadow: 0 9px 0 var(--shadow); }
+  .big .order { position: absolute; top: -16px; left: 18px; width: 34px; height: 34px; border-radius: 10px; border: 2px solid var(--ink); background: var(--hl-yellow); color: #141414; display: grid; place-items: center; font: 800 17px var(--font-display); }
+  .big h3 { font-size: 23px; letter-spacing: -0.025em; line-height: 1.1; }
+  .big .foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 6px; }
+  .mins { font-size: 14px; color: var(--muted); font-weight: 600; }
+
+  /* shared card bits */
+  .meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .code { font: 700 11.5px/1 var(--font-mono); padding: 5px 7px; border-radius: 7px; background: var(--paper-2); border: 1.5px solid var(--line); }
+  .unitname { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .reason { font: 700 12px/1 var(--font-body); padding: 6px 9px; border-radius: 99px; border: 1.5px solid var(--ink); color: #141414; white-space: nowrap; }
+  .r-exam { background: var(--hl-pink); } .r-next { background: var(--hl-blue); } .r-diag { background: var(--hl-yellow); }
+  .r-fresh { background: var(--hl-green); } .r-new { background: var(--hl-orange); }
+  .why { font-size: 14.5px; color: var(--ink-2); display: flex; gap: 8px; align-items: flex-start; }
+  .why svg { flex: none; margin-top: 3px; color: var(--muted); }
+  .preview { background: var(--paper); border: 1.5px solid var(--line); border-radius: 14px; padding: 14px; font-size: 14px; display: grid; gap: 9px; }
+  .preview .q { font-weight: 700; font-size: 14.5px; line-height: 1.35; }
+  .chipx { display: inline-block; padding: 6px 10px; border-radius: 9px; background: var(--card); font-weight: 600; font-size: 13px; border: 1.5px solid var(--line); }
+  .slot { display: inline-block; min-width: 92px; padding: 6px 10px; border-radius: 9px; border: 1.5px dashed var(--muted); color: var(--muted); font-size: 13px; }
+  .gap { display: inline-block; width: 74px; border-bottom: 2px solid var(--ink); transform: translateY(-3px); }
+  .squig { text-decoration: underline wavy var(--bad); text-underline-offset: 3px; }
+  .row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .radio { width: 14px; height: 14px; border-radius: 99px; border: 1.5px solid var(--ink); display: inline-block; flex: none; }
+  .ring { width: 38px; height: 38px; flex: none; }
+  .ring .track { stroke: var(--line); } .ring .fill { stroke: var(--good); }
+  .ring text { font: 700 12px var(--font-mono); fill: var(--ink); }
+  .scorewrap { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; line-height: 1.1; }
+
+  /* filters */
+  .wall-head { margin-top: 72px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 26px; align-items: center; }
+  .filters .lbl { font-weight: 700; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-right: 4px; }
+  .fchip { padding: 8px 13px; border-radius: 12px; border: 2px solid var(--line); background: var(--card); font-weight: 700; font-size: 14px; cursor: pointer; display: inline-flex; gap: 7px; align-items: center; }
+  .fchip i { width: 10px; height: 10px; border-radius: 3px; border: 1.5px solid var(--ink); }
+  .fchip[aria-pressed="true"] { border-color: var(--ink); box-shadow: 0 3px 0 var(--shadow); background: var(--ink); color: var(--paper); }
+  .fchip[aria-pressed="true"] i { border-color: var(--paper); }
+  .sep { width: 2px; height: 26px; background: var(--line); margin-inline: 6px; border-radius: 2px; }
+
+  /* masonry wall */
+  .wall { columns: 3 300px; column-gap: 20px; }
+  .card {
+    break-inside: avoid; margin-bottom: 20px; background: var(--card); border: 2px solid var(--ink); border-radius: 20px;
+    padding: 18px; box-shadow: 0 4px 0 var(--shadow); display: grid; gap: 12px; position: relative;
+    transition: transform .12s, box-shadow .12s, opacity .25s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--shadow); }
+  .card h3 { font-size: 20px; letter-spacing: -0.02em; line-height: 1.15; }
+  .card .foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .card.enter { animation: pop .4s cubic-bezier(.3,1.4,.5,1) both; }
+  @keyframes pop { from { opacity: 0; transform: translateY(14px) scale(.98); } }
+  .card.diagcta { background: #16191C; color: #EDEDE8; border-color: var(--ink); }
+  .card.diagcta h3 { font-size: 26px; }
+  .card.diagcta p { margin: 0; color: #A7A9A2; font-size: 15px; }
+  .card.diagcta .btn { justify-self: start; }
+  .meter { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .meter div { background: #1F2327; border-radius: 12px; padding: 10px; }
+  .meter b { display: block; font: 800 24px/1 var(--font-display); }
+  .meter small { font-size: 11.5px; color: #A7A9A2; }
+  .empty { padding: 40px; text-align: center; color: var(--muted); border: 2px dashed var(--line); border-radius: 20px; }
+  .empty .hand { font-size: 28px; }
+
+  .pagefoot { margin-top: 80px; border-top: 2px solid var(--ink); padding-block: 24px 40px; color: var(--muted); font-size: 14px; }
+</style>
+<script src="js/config.js"></script>
+<script src="js/sync.js"></script>
+</head>
+<body class="app">
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="bar">
+      <a class="brand" href="index.html" aria-label="Lamplight home">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 14 16 4l8 10Z" fill="var(--hl-yellow)" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><path d="M11 17 5 29h22l-6-12Z" fill="var(--hl-yellow)" opacity=".45"/><circle cx="16" cy="15.5" r="2" fill="var(--ink)"/></svg>
+        Lamplight
+      </a>
+      <nav class="navlinks" aria-label="Main">
+        <a href="index.html">Home</a>
+        <a href="recommendations.html" aria-current="page">Learning</a>
+        <a href="diagnostic.html">Diagnostic</a>
+        <a href="analytics.html">Analytics</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn" type="button" id="lights" aria-label="Turn lights off" title="Lights off">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
+        </button>
+        <a class="avatar" href="account.html" aria-label="Your account">S</a>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="subnav" id="subnav" data-current="foryou"></div>
+
+<main class="wrap">
+  <section class="head">
+    <div>
+      <span class="hand">picked from your last few sessions and your diagnostic</span>
+      <h1>For <span class="hl">you</span>.</h1>
+      <p>Every skill here was chosen for a reason, and the reason is on the card. Start with tonight's three, or browse the whole wall.</p>
+    </div>
+    <div class="streak" aria-label="4 night streak">
+      <div><b>4</b><small>night<br>streak</small></div>
+      <div class="days" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+    </div>
+  </section>
+
+  <section class="tonight" aria-labelledby="t3">
+    <div class="sub"><h2 id="t3">Tonight's three</h2><span class="hand">about 20 minutes, then bed</span></div>
+    <div class="three" id="three"></div>
+  </section>
+
+  <section aria-labelledby="wallh">
+    <div class="wall-head">
+      <div class="sub" style="margin:0"><h2 id="wallh">The whole wall</h2><span class="hand" id="count"></span></div>
+      <button class="btn btn-small" type="button" id="shuffle">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+        Shuffle
+      </button>
+    </div>
+    <div class="filters" id="filters" role="group" aria-label="Filter recommendations"></div>
+    <div class="wall" id="wall"></div>
+  </section>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">Sample recommendations shown. Yours are built from the units you upload.</div>
+</footer>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const REASONS = {
+    exam:  { label: 'Exam focus', cls: 'r-exam', c: 'var(--hl-pink)' },
+    diag:  { label: 'From the diagnostic', cls: 'r-diag', c: 'var(--hl-yellow)' },
+    next:  { label: 'Next up', cls: 'r-next', c: 'var(--hl-blue)' },
+    fresh: { label: 'Keep it fresh', cls: 'r-fresh', c: 'var(--hl-green)' },
+    new:   { label: 'Try something new', cls: 'r-new', c: 'var(--hl-orange)' }
+  };
+  const UNITS = { MKT: 'Marketing', PSY: 'Psychology' };
+
+  const R = [
+    { id: 1, unit: 'MKT', code: '6.3', t: 'Spot the pricing strategy', r: 'exam', score: 22, min: 8,
+      why: 'Week 6 is on your exam and you\'re at 22%.',
+      p: '<div class="q">A new phone launches at a high price, then drops it after six months. This is…</div><div class="row"><span class="chipx">Penetration</span><span class="chipx">Skimming</span><span class="chipx">Cost plus</span></div>' },
+    { id: 2, unit: 'PSY', code: '8.2', t: 'Match theorists to stages of development', r: 'diag', score: 12, min: 7,
+      why: 'Your diagnostic put Week 8 as your weakest week.',
+      p: '<div class="row"><span class="chipx">Piaget</span><span class="chipx">Erikson</span><span class="chipx">Vygotsky</span></div><div class="row"><span class="slot">cognitive</span><span class="slot">psychosocial</span><span class="slot">sociocultural</span></div>' },
+    { id: 3, unit: 'MKT', code: '5.1', t: 'Order the steps of building a brand', r: 'next', score: 0, min: 6,
+      why: 'You mastered 4.4 on Tuesday. This is the next step.',
+      p: '<div class="chipx">Brand positioning</div><div class="chipx">Brand name selection</div><div class="chipx">Brand sponsorship</div><div class="chipx">Brand development</div><div style="font-size:12.5px;color:var(--muted)">drag into the right order</div>' },
+    { id: 4, unit: 'PSY', code: '2.4', t: 'Choose the right research design', r: 'fresh', score: 100, min: 3,
+      why: 'Mastered 12 days ago. A quick refresh keeps it.',
+      p: '<div class="q">To show that caffeine causes better recall, you need…</div><div class="row"><span class="chipx">A survey</span><span class="chipx">An experiment</span><span class="chipx">A case study</span></div>' },
+    { id: 5, unit: 'PSY', code: '5.3', t: 'Fill the gap: memory stores', r: 'exam', score: 63, min: 5,
+      why: 'On your exam. You\'re at 63%, so 80 is close.',
+      p: '<div>Information fades from <span class="gap"></span> memory in about 18 to 30 seconds unless it\'s rehearsed.</div>' },
+    { id: 6, unit: 'MKT', code: '9.1', t: 'Read the case: promotion mix', r: 'new', score: 0, min: 8,
+      why: 'Week 9 was uploaded yesterday and you haven\'t started it.',
+      p: '<div class="q">A local gym has a tiny budget and wants 50 new members by March. Read the case and choose the best mix.</div><div class="row"><span class="chipx">TV ads</span><span class="chipx">Referral deal</span><span class="chipx">Billboards</span></div>' },
+    { id: 7, unit: 'MKT', code: '3.2', t: 'Sort segmentation variables', r: 'diag', score: 44, min: 6,
+      why: 'You mixed up psychographic and behavioural twice in the diagnostic.',
+      p: '<div class="row" style="justify-content:space-between"><span>Loyalty status</span><span><span class="radio"></span> <span class="radio"></span> <span class="radio"></span></span></div><div class="row" style="justify-content:space-between"><span>Lifestyle</span><span><span class="radio"></span> <span class="radio"></span> <span class="radio"></span></span></div><div style="font-size:12px;color:var(--muted)">demographic / psychographic / behavioural</div>' },
+    { id: 8, unit: 'PSY', code: '4.4', t: 'Fix the error: types of reinforcement', r: 'exam', score: 41, min: 6,
+      why: 'Week 4 is on your exam. This one trips most people up.',
+      p: '<div>Negative reinforcement <span class="squig">adds</span> an unpleasant stimulus to reduce a behaviour.</div><div style="font-size:12.5px;color:var(--muted)">click the wrong word and fix it</div>' },
+    { id: 9, unit: 'PSY', code: '3.1', t: 'Read the chart: forgetting curve', r: 'next', score: 0, min: 7,
+      why: 'Next skill in Week 3 after the one you just finished.',
+      p: '<svg viewBox="0 0 240 70" style="width:100%;height:64px"><path d="M6 64h228" stroke="var(--line)" stroke-width="2"/><polyline points="10,8 50,34 90,44 130,49 170,52 210,54" fill="none" stroke="var(--bad)" stroke-width="2.5"/><g fill="var(--ink)"><circle cx="10" cy="8" r="3"/><circle cx="50" cy="34" r="3"/><circle cx="90" cy="44" r="3"/><circle cx="130" cy="49" r="3"/><circle cx="170" cy="52" r="3"/><circle cx="210" cy="54" r="3"/></g></svg><div class="q">When is most information lost?</div>' },
+    { id: 10, unit: 'MKT', code: '1.2', t: 'Needs, wants or demands?', r: 'fresh', score: 100, min: 3,
+      why: 'Week 1 is on the exam. You mastered it, so just keep it warm.',
+      p: '<div class="row" style="justify-content:space-between"><span>Hungry, so wants food</span><span><span class="radio"></span> <span class="radio"></span> <span class="radio"></span></span></div><div class="row" style="justify-content:space-between"><span>Wants a burger and can pay</span><span><span class="radio"></span> <span class="radio"></span> <span class="radio"></span></span></div>' },
+    { id: 11, unit: 'MKT', code: '7.2', t: 'Type it: pricing strategies', r: 'new', score: 0, min: 5,
+      why: 'Something new from Week 7 to mix things up.',
+      p: '<div class="q">Launching at a low price to win market share fast is called…</div><div class="slot" style="width:100%">type your answer</div>' },
+    { id: 12, unit: 'PSY', code: '6.1', t: 'Analogies: theories of motivation', r: 'diag', score: 22, min: 6,
+      why: 'Motivation came up weak in your diagnostic.',
+      p: '<div>Drive reduction is to hunger as arousal theory is to <span class="gap"></span></div>' }
+  ];
+
+  const ring = s => {
+    const C = 94.2, off = (C * (1 - s / 100)).toFixed(1);
+    return '<svg class="ring" viewBox="0 0 38 38" aria-label="SmartScore ' + s + '"><circle class="track" cx="19" cy="19" r="15" fill="none" stroke-width="4"/><circle class="fill" cx="19" cy="19" r="15" fill="none" stroke-width="4" stroke-linecap="round" stroke-dasharray="94.2" stroke-dashoffset="' + off + '" transform="rotate(-90 19 19)"/><text x="19" y="20" text-anchor="middle" dominant-baseline="central">' + s + '</text></svg>';
+  };
+  const whyIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>';
+  const meta = x => '<div class="meta"><span class="reason ' + REASONS[x.r].cls + '">' + REASONS[x.r].label + '</span><span class="code">' + x.unit + ' ' + x.code + '</span><span class="unitname">' + UNITS[x.unit] + '</span></div>';
+
+  /* tonight's three: most urgent first */
+  const order = { exam: 0, diag: 1, next: 2, fresh: 3, new: 4 };
+  const sorted = R.slice().sort((a, b) => (order[a.r] - order[b.r]) || (a.score - b.score));
+  const top3 = ['exam', 'diag', 'next'].map(k => sorted.find(x => x.r === k));
+  $('#three').innerHTML = top3.map((x, i) =>
+    '<a class="big" href="practice.html"><span class="order">' + (i + 1) + '</span>' + meta(x) +
+    '<h3>' + x.t + '</h3><div class="why">' + whyIcon + '<span>' + x.why + '</span></div>' +
+    '<div class="preview">' + x.p + '</div>' +
+    '<div class="foot"><div class="scorewrap">' + ring(x.score) + '<span>Smart<br>Score</span></div><span class="mins">about ' + x.min + ' min</span><span class="btn btn-yellow btn-small">Start</span></div></a>'
+  ).join('');
+
+  /* filters */
+  const state = { reason: 'all', unit: 'all' };
+  const F = $('#filters');
+  const chip = (type, key, label, color) => '<button type="button" class="fchip" data-type="' + type + '" data-key="' + key + '" aria-pressed="false">' + (color ? '<i style="background:' + color + '"></i>' : '') + label + '</button>';
+  F.innerHTML = '<span class="lbl">Why</span>' + chip('reason', 'all', 'Everything') +
+    Object.entries(REASONS).map(([k, v]) => chip('reason', k, v.label, v.c)).join('') +
+    '<span class="sep" aria-hidden="true"></span><span class="lbl">Unit</span>' + chip('unit', 'all', 'All units') +
+    Object.entries(UNITS).map(([k, v]) => chip('unit', k, v)).join('');
+  F.addEventListener('click', e => {
+    const b = e.target.closest('.fchip'); if (!b) return;
+    state[b.dataset.type] = b.dataset.key; draw(true);
+  });
+
+  let list = R.slice();
+  function draw(animate) {
+    F.querySelectorAll('.fchip').forEach(b => b.setAttribute('aria-pressed', state[b.dataset.type] === b.dataset.key));
+    const shown = list.filter(x => (state.reason === 'all' || x.r === state.reason) && (state.unit === 'all' || x.unit === state.unit));
+    $('#count').textContent = shown.length + ' skills';
+    const W = $('#wall');
+    if (!shown.length) { W.innerHTML = '<div class="empty"><div class="hand">nothing here right now</div>Try a different filter.</div>'; return; }
+    const cards = shown.map(x =>
+      '<article class="card' + (animate ? ' enter' : '') + '">' + meta(x) + '<h3>' + x.t + '</h3>' +
+      '<div class="why">' + whyIcon + '<span>' + x.why + '</span></div>' +
+      '<div class="preview">' + x.p + '</div>' +
+      '<div class="foot"><div class="scorewrap">' + ring(x.score) + '<span>Smart<br>Score</span></div><a class="btn btn-small" href="practice.html">Try this</a></div></article>'
+    );
+    if (state.reason === 'all' && state.unit === 'all') {
+      cards.splice(3, 0, '<article class="card diagcta' + (animate ? ' enter' : '') + '"><span class="reason r-diag" style="justify-self:start">Diagnostic</span><h3>Your levels are 9 days old.</h3><p>A 10 minute diagnostic updates every week\'s level and makes these picks sharper.</p><div class="meter"><div><b>74</b><small>Psychology</small></div><div><b>61</b><small>Marketing</small></div><div><b>9</b><small>days old</small></div></div><a class="btn btn-yellow btn-small" href="diagnostic.html">Take the diagnostic</a></article>');
+    }
+    W.innerHTML = cards.join('');
+    if (animate) W.querySelectorAll('.card').forEach((c, i) => c.style.animationDelay = (i * 35) + 'ms');
+  }
+  $('#shuffle').addEventListener('click', () => {
+    for (let i = list.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [list[i], list[j]] = [list[j], list[i]]; }
+    draw(true);
+  });
+  draw(false);
+
+  /* lights */
+  const L = $('#lights');
+  L.addEventListener('click', () => {
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (dark) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', 'dark');
+    L.setAttribute('aria-label', dark ? 'Turn lights off' : 'Turn lights on');
+  });
+})();
+</script>
+<script src="js/account.js"></script>
+<script src="js/subnav.js"></script>
+<script src="js/tour.js"></script>
+</body>
+</html>

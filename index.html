@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lamplight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Caveat:wght@600;700&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/lamplight.css">
+<style>
+  .navlinks a[aria-current="page"] { background: var(--hl-yellow); color: #141414; }
+  .avatar { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--ink); background: var(--hl-pink); color: #141414; display: grid; place-items: center; font: 800 17px var(--font-display); text-decoration: none; box-shadow: 0 3px 0 var(--shadow); }
+  .icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--line); background: var(--card); display: grid; place-items: center; cursor: pointer; color: var(--ink); }
+  .icon-btn:hover { border-color: var(--ink); }
+  /* ================= HERO ================= */
+  .hero { position: relative; padding-block: 56px 72px; overflow-x: clip; }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; }
+  @media (max-width: 940px) { .hero-grid { grid-template-columns: 1fr; gap: 56px; } }
+  .hero h1 { font-size: clamp(52px, 8.4vw, 112px); line-height: .9; letter-spacing: -0.045em; }
+  .hero h1 .strike { position: relative; color: var(--muted); font-weight: 700; }
+  .hero h1 .strike::after {
+    content: ""; position: absolute; left: -2%; right: -2%; top: 52%; height: .09em;
+    background: var(--bad); border-radius: 99px; transform: rotate(-3deg) scaleX(var(--swipe,1)); transform-origin: left;
+    transition: transform .5s .2s cubic-bezier(.3,.8,.3,1);
+  }
+  .lede { font-size: 20px; line-height: 1.5; color: var(--ink-2); max-width: 30em; margin: 28px 0 0; }
+  .pill { display: inline-block; padding: 1px 12px 3px; border-radius: 99px; border: 1.5px solid currentColor; font-weight: 600; font-size: .92em; line-height: 1.35; margin: 2px 1px; white-space: nowrap; }
+  .pill.p1 { color: #B55B00; background: color-mix(in srgb, var(--hl-orange) 30%, transparent); }
+  .pill.p2 { color: #B0306E; background: color-mix(in srgb, var(--hl-pink) 30%, transparent); }
+  .pill.p3 { color: #1F6FA8; background: color-mix(in srgb, var(--hl-blue) 32%, transparent); }
+  .pill.p4 { color: #1E7A41; background: color-mix(in srgb, var(--hl-green) 34%, transparent); }
+  :root[data-theme="dark"] .pill.p1 { color: var(--hl-orange); }
+  :root[data-theme="dark"] .pill.p2 { color: var(--hl-pink); }
+  :root[data-theme="dark"] .pill.p3 { color: var(--hl-blue); }
+  :root[data-theme="dark"] .pill.p4 { color: var(--hl-green); }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 34px; align-items: center; }
+
+  /* the live question */
+  .playground { position: relative; min-height: 470px; display: grid; place-items: center; }
+  .qcard {
+    position: relative; z-index: 2; width: min(100%, 460px);
+    background: var(--card); border: 2.5px solid var(--ink); border-radius: 22px;
+    box-shadow: 0 8px 0 var(--shadow); padding: 22px 22px 20px;
+  }
+  .qhead { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .tag { font: 700 12px/1 var(--font-mono); letter-spacing: .02em; padding: 6px 9px; border-radius: 8px; background: var(--hl-blue); color: #141414; }
+  .qhead .unit { font-size: 13.5px; color: var(--muted); font-weight: 600; }
+  .score { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .score small { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); line-height: 1.1; text-align: right; }
+  .ring { width: 48px; height: 48px; }
+  .ring .track { stroke: var(--line); }
+  .ring .fill { stroke: var(--good); transition: stroke-dashoffset .9s cubic-bezier(.3,.8,.3,1); }
+  .ring text { font: 700 15px var(--font-mono); fill: var(--ink); }
+  .qtext { font: 700 21px/1.3 var(--font-display); letter-spacing: -0.015em; margin: 4px 0 16px; }
+  .opts { display: grid; gap: 10px; }
+  .opt {
+    text-align: left; padding: 13px 16px; border-radius: 12px; cursor: pointer;
+    background: var(--paper); border: 2px solid var(--line); font-weight: 600; font-size: 16px;
+    display: flex; align-items: center; gap: 12px; transition: border-color .15s, background .15s, transform .08s;
+  }
+  .opt:hover { border-color: var(--ink); }
+  .opt:active { transform: scale(.99); }
+  .opt .k { width: 26px; height: 26px; flex: none; border-radius: 8px; border: 2px solid var(--line); display: grid; place-items: center; font: 700 12px var(--font-mono); color: var(--muted); }
+  .opt.right { background: var(--good-soft); border-color: var(--good); }
+  .opt.right .k { background: var(--good); border-color: var(--good); color: #fff; }
+  .opt.wrong { background: var(--bad-soft); border-color: var(--bad); }
+  .opt.wrong .k { background: var(--bad); border-color: var(--bad); color: #fff; }
+  .opt:disabled { cursor: default; }
+  .feedback { margin-top: 14px; padding: 14px 16px; border-radius: 12px; background: var(--paper-2); font-size: 15px; display: grid; gap: 10px; }
+  .feedback b.ok { color: var(--good); }
+  .feedback b.no { color: var(--bad); }
+  .feedback .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .pop { position: absolute; right: 18px; top: -18px; font: 800 18px var(--font-display); background: var(--hl-green); color: #141414; border: 2px solid var(--ink); border-radius: 10px; padding: 4px 10px; box-shadow: 0 3px 0 var(--shadow); opacity: 0; transform: translateY(8px) rotate(4deg); transition: all .35s cubic-bezier(.3,1.6,.5,1); }
+  .pop.show { opacity: 1; transform: translateY(0) rotate(4deg); }
+
+  .note { position: absolute; z-index: 3; font-family: var(--font-hand); font-size: 28px; font-weight: 700; color: var(--ink-2); line-height: 1; transform: rotate(-6deg); }
+  .note svg { display: block; }
+  .note.try { left: 6px; top: -46px; display: flex; align-items: flex-start; gap: 2px; }
+  .note.try svg { transform: rotate(20deg); margin-top: 8px; }
+  .playground { margin-bottom: 40px; }
+
+  /* floating desk objects (layered, move on scroll) */
+  .float { position: absolute; z-index: 1; will-change: transform; pointer-events: none; }
+  .float.sticky { right: -34px; bottom: 70px; width: 124px; z-index: 3; }
+  .float.marker { left: -40px; bottom: -14px; width: 150px; z-index: 3; }
+  .float.cup { left: -18px; top: 6px; width: 104px; z-index: 1; }
+  @media (max-width: 560px) { .float { display: none; } }
+
+  /* ================= NO LIST ================= */
+  .nolist { padding-block: 72px; text-align: center; }
+  .nolist p { margin: 0; font: 700 clamp(30px, 5vw, 60px)/1.12 var(--font-display); letter-spacing: -0.035em; }
+  .nolist p span { color: var(--bad); font-weight: 800; margin-right: .18em; }
+  .nolist p.yes span { color: var(--good); }
+  .nolist p { opacity: var(--o, 1); transform: translateY(calc((1 - var(--o, 1)) * 18px)); transition: opacity .5s, transform .5s; }
+
+  /* ================= SCROLL STORY ================= */
+  .story { position: relative; height: 320vh; overflow-x: clip; }
+  @media (max-width: 520px) { .file small { display: none; } }
+  .story-inner { position: sticky; top: 0; height: 100vh; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+  @media (max-width: 880px) { .story-inner { grid-template-columns: 1fr; align-content: center; gap: 18px; padding-top: 70px; } }
+  .story-copy .kicker { font-family: var(--font-hand); font-size: 30px; color: var(--muted); transform: rotate(-2deg); display: inline-block; }
+  .story-copy h2 { font-size: clamp(38px, 5vw, 64px); margin: 6px 0 26px; }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .steps li { display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start; padding: 12px 14px; border-radius: 14px; border: 2px solid transparent; opacity: .42; transition: all .3s; }
+  .steps li.on { opacity: 1; border-color: var(--ink); background: var(--card); box-shadow: 0 3px 0 var(--shadow); }
+  .steps .n { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font: 800 20px var(--font-display); background: var(--paper-2); }
+  .steps li.on .n { background: var(--hl-yellow); color: #141414; }
+  .steps b { display: block; font-size: 18px; }
+  .steps span { color: var(--muted); font-size: 15.5px; }
+  @media (max-width: 880px) { .steps li { padding: 8px 10px; } .steps span { display: none; } .story-copy h2 { margin-bottom: 12px; } }
+
+  .stage { position: relative; height: min(460px, 52vh); }
+  .layer { position: absolute; inset: 0; display: grid; place-items: center; }
+  .folder { width: min(100%, 380px); position: relative; }
+  .folder-back { background: var(--hl-orange); border: 2.5px solid var(--ink); border-radius: 6px 18px 18px 18px; padding: 54px 18px 20px; position: relative; box-shadow: 0 6px 0 var(--shadow); }
+  .folder-back::before { content: ""; position: absolute; left: -2.5px; top: -24px; width: 140px; height: 26px; background: var(--hl-orange); border: 2.5px solid var(--ink); border-bottom: 0; border-radius: 12px 12px 0 0; }
+  .folder-name { position: absolute; left: 16px; top: -18px; font: 800 17px var(--font-display); color: #141414; z-index: 2; }
+  .file { display: flex; align-items: center; gap: 12px; background: var(--card); border: 2px solid var(--ink); border-radius: 10px; padding: 11px 13px; margin-top: 10px; font-weight: 600; font-size: 15px; }
+  .file i { font: 700 10.5px var(--font-mono); font-style: normal; padding: 4px 6px; border-radius: 6px; color: #141414; }
+  .file .x-pdf { background: var(--hl-pink); } .file .x-ppt { background: var(--hl-orange); } .file .x-doc { background: var(--hl-blue); }
+  .file small { margin-left: auto; color: var(--muted); font-weight: 500; white-space: nowrap; }
+
+  .skills { width: min(100%, 420px); display: grid; gap: 10px; }
+  .skills h4 { margin: 0 0 4px; font: 800 20px var(--font-display); letter-spacing: -0.02em; }
+  .skill { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: var(--card); border: 2px solid var(--ink); font-weight: 600; font-size: 15.5px; box-shadow: 0 3px 0 var(--shadow); }
+  .skill .code { font: 700 12px var(--font-mono); color: var(--muted); }
+  .skill .count { margin-left: auto; font-size: 13px; color: var(--muted); font-weight: 500; white-space: nowrap; }
+
+  .mastery { width: min(100%, 400px); background: var(--card); border: 2.5px solid var(--ink); border-radius: 22px; padding: 26px; box-shadow: 0 8px 0 var(--shadow); text-align: center; position: relative; }
+  .mastery .big { font: 800 104px/1 var(--font-display); letter-spacing: -0.06em; font-variant-numeric: tabular-nums; }
+  .mastery .lbl { font-weight: 700; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .pbar { height: 14px; border-radius: 99px; background: var(--paper-2); border: 2px solid var(--ink); overflow: hidden; margin: 18px 0 12px; }
+  .pbar i { display: block; height: 100%; width: 0%; background: var(--good); }
+  .stamp { position: absolute; right: -16px; top: -22px; font: 800 20px var(--font-display); letter-spacing: .02em; color: var(--good); border: 3px solid var(--good); border-radius: 10px; padding: 6px 12px; background: var(--card); transform: rotate(10deg) scale(var(--st, 0)); transition: transform .35s cubic-bezier(.3,1.6,.5,1); }
+
+  /* ================= EXAM PLANNER ================= */
+  .section { padding-block: 96px 24px; }
+  .sec-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 16px 32px; margin-bottom: 32px; }
+  .sec-head h2 { font-size: clamp(40px, 5.6vw, 72px); }
+  .sec-head p { max-width: 28em; color: var(--ink-2); margin: 0; font-size: 18px; }
+  .planner { background: var(--card); border: 2.5px solid var(--ink); border-radius: 26px; box-shadow: 0 8px 0 var(--shadow); padding: 26px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 32px; }
+  @media (max-width: 880px) { .planner { grid-template-columns: 1fr; padding: 18px; } }
+  .unit-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .unit-tab { padding: 9px 14px; border-radius: 12px; border: 2px solid var(--line); background: var(--paper); font-weight: 700; font-size: 14.5px; cursor: pointer; }
+  .unit-tab[aria-selected="true"] { border-color: var(--ink); background: var(--hl-yellow); color: #141414; box-shadow: 0 3px 0 var(--shadow); }
+  .weeks { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+  @media (max-width: 520px) { .weeks { grid-template-columns: repeat(4, 1fr); } }
+  .week {
+    --m: 0; position: relative; aspect-ratio: 1; border-radius: 14px; cursor: pointer; padding: 8px;
+    border: 2px solid var(--ink); text-align: left; display: flex; flex-direction: column; justify-content: space-between;
+    background: color-mix(in srgb, var(--good) calc(var(--m) * 0.62%), var(--paper));
+    transition: transform .1s, opacity .2s;
+  }
+  .week .wk { font: 700 12px var(--font-mono); }
+  .week .pc { font: 800 20px var(--font-display); letter-spacing: -0.03em; }
+  .week.hot .pc, .week.hot .wk { color: #fff; }
+  .week[aria-pressed="false"] { opacity: .35; border-style: dashed; }
+  .week:hover { transform: translateY(-2px); }
+  .week .chk { position: absolute; right: 7px; top: 7px; width: 16px; height: 16px; border-radius: 5px; border: 2px solid currentColor; display: grid; place-items: center; }
+  .week[aria-pressed="true"] .chk::after { content: ""; width: 7px; height: 4px; border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg) translate(1px,-1px); }
+  .week.hot { color: #fff; }
+  .legend { display: flex; justify-content: space-between; color: var(--muted); font-size: 13.5px; margin-top: 12px; flex-wrap: wrap; gap: 8px; }
+  .readiness { border-left: 2px dashed var(--line); padding-left: 32px; display: flex; flex-direction: column; gap: 14px; }
+  @media (max-width: 880px) { .readiness { border-left: 0; border-top: 2px dashed var(--line); padding: 20px 0 0; } }
+  .readiness .cd { font-family: var(--font-hand); font-size: 30px; transform: rotate(-2deg); color: var(--bad); }
+  .readiness .num { font: 800 110px/0.9 var(--font-display); letter-spacing: -0.06em; font-variant-numeric: tabular-nums; }
+  .readiness .num small { font-size: .38em; letter-spacing: -0.02em; }
+  .readiness p { margin: 0; color: var(--ink-2); }
+  .weakest { display: grid; gap: 8px; }
+  .weakest div { display: flex; justify-content: space-between; gap: 10px; padding: 10px 12px; background: var(--paper); border-radius: 10px; font-size: 15px; font-weight: 600; }
+  .weakest span { color: var(--bad); font-family: var(--font-mono); font-size: 13px; }
+
+  /* ================= QUESTION TYPES ================= */
+  .types { overflow: hidden; padding-block: 12px 28px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+  .track { display: flex; gap: 18px; width: max-content; animation: slide 60s linear infinite; padding-bottom: 6px; }
+  .track.rev { animation-direction: reverse; margin-top: 18px; animation-duration: 70s; }
+  .types:hover .track { animation-play-state: paused; }
+  @keyframes slide { to { transform: translateX(-50%); } }
+  .mini { width: 270px; flex: none; background: var(--card); border: 2px solid var(--ink); border-radius: 18px; padding: 16px; box-shadow: 0 4px 0 var(--shadow); }
+  .mini h5 { margin: 0 0 12px; font: 800 17px var(--font-display); letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+  .mini h5 i { width: 12px; height: 12px; border-radius: 4px; background: var(--c, var(--hl-yellow)); border: 1.5px solid var(--ink); }
+  .mini .body { font-size: 13.5px; color: var(--ink-2); display: grid; gap: 7px; }
+  .chipx { display: inline-block; padding: 5px 9px; border-radius: 8px; background: var(--paper-2); font-weight: 600; font-size: 12.5px; border: 1.5px solid var(--line); }
+  .slot { display: inline-block; min-width: 86px; padding: 5px 9px; border-radius: 8px; border: 1.5px dashed var(--muted); color: var(--muted); font-size: 12.5px; }
+  .gap { display: inline-block; width: 70px; border-bottom: 2px solid var(--ink); }
+  .squig { text-decoration: underline wavy var(--bad); text-underline-offset: 3px; }
+  .minirow { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .radio { width: 13px; height: 13px; border-radius: 99px; border: 1.5px solid var(--ink); display: inline-block; }
+  .radio.on { background: var(--ink); }
+
+  /* ================= 11PM ================= */
+  .night { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+  @media (max-width: 880px) { .night { grid-template-columns: 1fr; } }
+  .night h2 { font-size: clamp(44px, 6vw, 84px); }
+  .night p { font-size: 19px; color: var(--ink-2); max-width: 26em; }
+  .switch { display: inline-flex; align-items: center; gap: 14px; cursor: pointer; font-weight: 700; font-size: 17px; background: none; border: 0; padding: 0; margin-top: 10px; }
+  .switch .knob { width: 74px; height: 40px; border-radius: 99px; border: 2.5px solid var(--ink); background: var(--hl-yellow); position: relative; box-shadow: 0 3px 0 var(--shadow); transition: background .3s; }
+  .switch .knob::after { content: ""; position: absolute; top: 4px; left: 4px; width: 27px; height: 27px; border-radius: 99px; background: var(--ink); transition: transform .3s cubic-bezier(.3,1.4,.5,1); }
+  .switch[aria-checked="true"] .knob { background: #3B4B6E; }
+  .switch[aria-checked="true"] .knob::after { transform: translateX(34px); background: #F1F1EC; }
+  .goals { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+  .goal { padding: 9px 14px; border-radius: 12px; border: 2px solid var(--line); font-weight: 700; font-size: 14.5px; background: var(--card); cursor: pointer; }
+  .goal[aria-pressed="true"] { border-color: var(--ink); background: var(--hl-green); color: #141414; box-shadow: 0 3px 0 var(--shadow); }
+
+  .phone { width: 300px; max-width: 100%; margin-inline: auto; border: 3px solid var(--ink); border-radius: 44px; padding: 12px; background: #0F1113; box-shadow: 0 10px 0 var(--shadow); transform: rotate(3deg); }
+  .screen { border-radius: 33px; background: #16191C; color: #EDEDE8; padding: 22px 18px 20px; min-height: 540px; display: flex; flex-direction: column; gap: 14px; }
+  .screen .top { display: flex; justify-content: space-between; font: 600 12px var(--font-mono); color: #8D9089; }
+  .screen h6 { margin: 6px 0 0; font: 800 26px/1.05 var(--font-display); letter-spacing: -0.03em; }
+  .screen .goalbar { height: 10px; border-radius: 99px; background: #262A2E; overflow: hidden; }
+  .screen .goalbar i { display: block; height: 100%; background: #7ED192; width: 40%; transition: width .6s; }
+  .screen .sm { font-size: 13px; color: #A7A9A2; }
+  .screen .q { background: #1F2327; border-radius: 16px; padding: 14px; font-weight: 600; font-size: 14.5px; }
+  .screen .a { border: 1.5px solid #32373C; border-radius: 12px; padding: 10px 12px; font-size: 13.5px; margin-top: 8px; font-weight: 500; }
+  .screen .a.sel { border-color: #6FD394; background: #193A27; }
+  .screen .moon { margin-top: auto; text-align: center; font-family: var(--font-hand); font-size: 24px; color: #A7A9A2; }
+
+  /* ================= FINAL ================= */
+  .final { padding-block: 120px 80px; text-align: center; }
+  .final h2 { font-size: clamp(46px, 7.4vw, 104px); max-width: 12em; margin-inline: auto; }
+  .final .hero-cta { justify-content: center; }
+  footer { border-top: 2px solid var(--ink); padding-block: 28px 40px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: center; }
+  footer nav { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-left: auto; }
+  footer a { text-decoration: none; font-weight: 600; color: var(--ink-2); font-size: 15px; }
+  footer a:hover { color: var(--ink); }
+  footer small { color: var(--muted); width: 100%; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .story { height: auto; }
+    .story-inner { position: static; height: auto; padding-block: 60px; }
+    .stage { height: auto; display: grid; gap: 40px; }
+    .layer { position: static; opacity: 1 !important; transform: none !important; }
+    .track { animation: none; flex-wrap: wrap; width: auto; }
+  }
+</style>
+<script src="js/config.js"></script>
+<script src="js/sync.js"></script>
+</head>
+<body class="app">
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="bar">
+      <a class="brand" href="index.html" aria-label="Lamplight home">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 14 16 4l8 10Z" fill="var(--hl-yellow)" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><path d="M11 17 5 29h22l-6-12Z" fill="var(--hl-yellow)" opacity=".45"/><circle cx="16" cy="15.5" r="2" fill="var(--ink)"/></svg>
+        Lamplight
+      </a>
+      <nav class="navlinks" aria-label="Main">
+        <a href="index.html" aria-current="page">Home</a>
+        <a href="subject.html">Learning</a>
+        <a href="diagnostic.html">Diagnostic</a>
+        <a href="analytics.html">Analytics</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn" type="button" id="navLights" aria-label="Turn lights off" title="Lights off">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
+        </button>
+        <a class="avatar" href="account.html" aria-label="Your account">S</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero wrap">
+    <div class="hero-grid">
+      <div>
+        <h1>Stop <span class="strike" id="strike">rereading</span><br>your slides.<br><span class="hl" id="swipe">Practise</span> them.</h1>
+        <p class="lede">Drop in your <span class="pill p1">lectures</span> <span class="pill p2">slides</span> <span class="pill p3">readings</span> and <span class="pill p4">tutorials</span>. Lamplight turns every week of every unit into questions, and a SmartScore that tells you when you actually know it.</p>
+        <div class="hero-cta">
+          <a class="btn btn-yellow" href="signup.html">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>
+            Upload your first week
+          </a>
+          <a class="btn" href="#how">See how it works</a>
+        </div>
+      </div>
+
+      <div class="playground" id="play">
+        <svg class="float sticky" data-speed="0.18" viewBox="0 0 130 130" aria-hidden="true">
+          <g transform="rotate(8 65 65)"><rect x="10" y="10" width="110" height="110" rx="4" fill="var(--hl-pink)" stroke="var(--ink)" stroke-width="2.5"/><path d="M10 100 30 120H10Z" fill="var(--ink)" opacity=".12"/>
+          <text x="22" y="48" font-family="Caveat, cursive" font-weight="700" font-size="20" fill="#141414">exam wk 12</text>
+          <text x="22" y="74" font-family="Caveat, cursive" font-weight="700" font-size="20" fill="#141414">redo wk 4!!</text></g>
+        </svg>
+        <svg class="float marker" data-speed="0.35" viewBox="0 0 160 50" aria-hidden="true">
+          <g transform="rotate(-14 80 25)"><rect x="8" y="14" width="104" height="24" rx="6" fill="var(--hl-yellow)" stroke="var(--ink)" stroke-width="2.5"/><rect x="112" y="16" width="26" height="20" rx="3" fill="var(--card)" stroke="var(--ink)" stroke-width="2.5"/><path d="M138 20 152 24 152 28 138 32Z" fill="var(--ink)"/><rect x="20" y="20" width="60" height="4" rx="2" fill="#fff" opacity=".6"/></g>
+        </svg>
+        <svg class="float cup" data-speed="-0.15" viewBox="0 0 110 110" aria-hidden="true">
+          <path d="M22 40h56l-6 58a6 6 0 0 1-6 5H34a6 6 0 0 1-6-5Z" fill="var(--hl-blue)" stroke="var(--ink)" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M78 52h8a10 10 0 0 1 0 20h-10" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+          <rect x="18" y="32" width="64" height="10" rx="4" fill="var(--card)" stroke="var(--ink)" stroke-width="2.5"/>
+          <path d="M40 22c0-6 6-6 6-12M54 24c0-6 6-6 6-12" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+
+        <div class="note try" aria-hidden="true">go on, try it
+          <svg width="70" height="40" viewBox="0 0 70 40"><path d="M6 6c10 20 30 28 52 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M50 22l9 8-11 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+
+        <div class="qcard" aria-live="polite">
+          <span class="pop" id="pop">+14</span>
+          <div class="qhead">
+            <span class="tag" id="qTag">4.2</span>
+            <span class="unit" id="qUnit">Intro to Psychology, Week 4</span>
+            <div class="score">
+              <small>Smart<br>Score</small>
+              <svg class="ring" viewBox="0 0 48 48" aria-label="SmartScore">
+                <circle class="track" cx="24" cy="24" r="19" fill="none" stroke-width="5"/>
+                <circle class="fill" id="ringFill" cx="24" cy="24" r="19" fill="none" stroke-width="5" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4" transform="rotate(-90 24 24)"/>
+                <text id="ringNum" x="24" y="25" text-anchor="middle" dominant-baseline="central">0</text>
+              </svg>
+            </div>
+          </div>
+          <p class="qtext" id="qText"></p>
+          <div class="opts" id="opts"></div>
+          <div class="feedback" id="fb" hidden></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NO LIST -->
+  <section class="nolist wrap" aria-label="What changes">
+    <p class="reveal"><span>NO</span>highlighting the whole textbook</p>
+    <p class="reveal"><span>NO</span>guessing what's on the exam</p>
+    <p class="reveal"><span>NO</span>2am panic rereads</p>
+    <p class="reveal yes"><span>JUST</span>questions from your own unit</p>
+  </section>
+
+  <!-- SCROLL STORY -->
+  <section class="story" id="how" aria-label="How it works">
+    <div class="story-inner wrap">
+      <div class="story-copy">
+        <span class="kicker">how it works</span>
+        <h2>One folder in.<br>A whole week out.</h2>
+        <ol class="steps">
+          <li data-step="0"><span class="n">1</span><div><b>Drop in the week</b><span>Whole folders at once: PDFs, slides, Word docs, readings.</span></div></li>
+          <li data-step="1"><span class="n">2</span><div><b>Skills get pulled out</b><span>Each week is split into the specific things you need to be able to do.</span></div></li>
+          <li data-step="2"><span class="n">3</span><div><b>Practise to 100</b><span>Questions get harder as your SmartScore climbs. 100 means mastered.</span></div></li>
+        </ol>
+      </div>
+      <div class="stage" aria-hidden="true">
+        <div class="layer" id="L0">
+          <div class="folder">
+            <span class="folder-name">Week 4</span>
+            <div class="folder-back">
+              <div class="file"><i class="x-pdf">PDF</i>Lecture 4: Learning.pdf<small>42 slides</small></div>
+              <div class="file"><i class="x-ppt">PPT</i>Tutorial 4 activities.pptx<small>18 slides</small></div>
+              <div class="file"><i class="x-pdf">PDF</i>Reading: Pavlov and Skinner<small>24 pages</small></div>
+              <div class="file"><i class="x-doc">DOC</i>My lecture notes.docx<small>3 pages</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="layer" id="L1">
+          <div class="skills">
+            <h4>Week 4: Learning and conditioning</h4>
+            <div class="skill"><span class="code">4.1</span>Define classical conditioning<span class="count">12 questions</span></div>
+            <div class="skill"><span class="code">4.2</span>Identify the CS, US, CR and UR<span class="count">16 questions</span></div>
+            <div class="skill"><span class="code">4.3</span>Explain extinction and recovery<span class="count">10 questions</span></div>
+            <div class="skill"><span class="code">4.4</span>Compare operant and classical<span class="count">14 questions</span></div>
+            <div class="skill"><span class="code">4.5</span>Apply reinforcement schedules<span class="count">12 questions</span></div>
+          </div>
+        </div>
+        <div class="layer" id="L2">
+          <div class="mastery">
+            <span class="stamp" id="stamp">MASTERED</span>
+            <div class="lbl">4.2 Identify the CS, US, CR and UR</div>
+            <div class="big" id="bigScore">0</div>
+            <div class="lbl">SmartScore out of 100</div>
+            <div class="pbar"><i id="bigBar"></i></div>
+            <div class="legend" style="margin:0"><span id="qCount">0 questions</span><span id="tCount">0 min</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXAM PLANNER -->
+  <section class="section wrap" id="exams">
+    <div class="sec-head">
+      <h2>Exam in 19 days?<br><span class="hl pink">Know</span> your weak weeks.</h2>
+      <p>Tick the weeks that are on the exam. Lamplight shows how ready you are and sends you straight to the weeks that need it. Try it with these sample units.</p>
+    </div>
+    <div class="planner">
+      <div>
+        <div class="unit-tabs" role="tablist" aria-label="Sample units" id="unitTabs"></div>
+        <div class="weeks" id="weeks"></div>
+        <div class="legend"><span>Tap a week to add or remove it from the exam</span><span>Greener = more of that week mastered</span></div>
+      </div>
+      <div class="readiness">
+        <span class="cd">exam in 19 days</span>
+        <div class="num" id="ready">0<small>% ready</small></div>
+        <p id="readyNote"></p>
+        <div class="weakest" id="weakest"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUESTION TYPES -->
+  <section class="section" id="types">
+    <div class="wrap sec-head">
+      <h2>Fourteen ways<br>to get <span class="hl blue">quizzed</span>.</h2>
+      <p>Not just multiple choice. Every skill gets the question type that suits it, so you're tested the way your exam will test you.</p>
+    </div>
+    <div class="types" aria-label="Question types">
+      <div class="track" id="track1"></div>
+      <div class="track rev" id="track2"></div>
+    </div>
+  </section>
+
+  <!-- 11PM -->
+  <section class="section wrap" id="night">
+    <div class="night">
+      <div>
+        <h2>Built for <span class="hl orange">11pm</span>.</h2>
+        <p>Most studying happens after everything else is done. Turn the lights down, set a small goal for the night, and stop when you hit it.</p>
+        <button class="switch" id="lights" role="switch" aria-checked="false" type="button"><span class="knob"></span><span id="lightsLbl">Lights off</span></button>
+        <div class="goals" role="group" aria-label="Nightly goal">
+          <button class="goal" type="button" data-g="10" aria-pressed="false">10 questions</button>
+          <button class="goal" type="button" data-g="20" aria-pressed="true">20 questions</button>
+          <button class="goal" type="button" data-g="30" aria-pressed="false">30 questions</button>
+        </div>
+      </div>
+      <div class="phone" aria-hidden="true">
+        <div class="screen">
+          <div class="top"><span>11:04 pm</span><span>tonight</span></div>
+          <h6>8 of <span id="goalN">20</span> done.<br>Nearly there.</h6>
+          <div class="goalbar"><i id="goalBar"></i></div>
+          <span class="sm">Contract Law, Week 6: Misrepresentation</span>
+          <div class="q">A seller says a car has "never been in an accident". It has. This is most likely…
+            <div class="a">A term of the contract</div>
+            <div class="a sel">A misrepresentation</div>
+            <div class="a">Mere puffery</div>
+          </div>
+          <div class="moon">then bed. promise.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL -->
+  <section class="final wrap">
+    <h2>Your next exam already has a <span class="hl green">question bank</span>.</h2>
+    <p class="lede" style="margin-inline:auto;text-align:center">It's sitting in your lecture folder. Upload a week and see.</p>
+    <div class="hero-cta">
+      <a class="btn btn-yellow" href="signup.html">Upload your first week</a>
+      <a class="btn" href="signup.html">Sign up free</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 14 16 4l8 10Z" fill="var(--hl-yellow)" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><path d="M11 17 5 29h22l-6-12Z" fill="var(--hl-yellow)" opacity=".45"/><circle cx="16" cy="15.5" r="2" fill="var(--ink)"/></svg>Lamplight</a>
+    <nav aria-label="Footer">
+      <a href="#how">How it works</a><a href="#exams">For exams</a><a href="#types">Question types</a><a href="#">Help</a><a href="#">Privacy</a>
+    </nav>
+    <small>Lamplight, 2026. Practice built from your own course content.</small>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const ease = t => 1 - Math.pow(1 - t, 3);
+
+  /* headline swipes on load */
+  const sw = $('#swipe'), st = $('#strike');
+  if (!reduce) {
+    sw.style.setProperty('--swipe', 0); st.style.setProperty('--swipe', 0);
+    requestAnimationFrame(() => setTimeout(() => { st.style.setProperty('--swipe', 1); setTimeout(() => sw.style.setProperty('--swipe', 1), 350); }, 250));
+  }
+
+  /* live question */
+  const QS = [
+    { tag: '4.2', unit: 'Intro to Psychology, Week 4',
+      q: 'A dog now drools when it hears the bell that used to come before food. The bell is the…',
+      o: ['Unconditioned stimulus', 'Conditioned stimulus', 'Neutral stimulus', 'Conditioned response'], a: 1,
+      e: 'The bell only triggers drooling because it was paired with food, so it is now a conditioned stimulus.' },
+    { tag: '6.3', unit: 'Contract Law, Week 6',
+      q: 'Before signing, a seller says the car has "never been in an accident". It has. This is most likely…',
+      o: ['A term of the contract', 'Mere puffery', 'A misrepresentation', 'An invitation to treat'], a: 2,
+      e: 'A false statement of fact that induced the contract is a misrepresentation. Puffery is vague sales talk.' },
+    { tag: '2.4', unit: 'Foundations of Nursing, Week 2',
+      q: 'Which is the single most effective way to stop infection spreading on a ward?',
+      o: ['Wearing a mask at all times', 'Hand hygiene', 'Isolating every patient', 'Daily antibiotics'], a: 1,
+      e: 'Hand hygiene is the most effective single measure for preventing healthcare associated infection.' },
+    { tag: '3.1', unit: 'Principles of Marketing, Week 3',
+      q: 'Splitting a market into groups by age, income and life stage is called…',
+      o: ['Positioning', 'Targeting', 'Demographic segmentation', 'Psychographic segmentation'], a: 2,
+      e: 'Age, income and life stage are demographic variables. Values and lifestyle would be psychographic.' }
+  ];
+  let qi = 0, score = 0;
+  const C = 119.4;
+  const ring = $('#ringFill'), ringNum = $('#ringNum'), pop = $('#pop');
+  function setScore(v) {
+    const from = score; score = v;
+    ring.style.strokeDashoffset = C * (1 - v / 100);
+    const t0 = performance.now();
+    const tick = t => { const k = clamp((t - t0) / 700); ringNum.textContent = Math.round(from + (v - from) * ease(k)); if (k < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+  }
+  function renderQ() {
+    const Q = QS[qi];
+    $('#qTag').textContent = Q.tag; $('#qUnit').textContent = Q.unit; $('#qText').textContent = Q.q;
+    const box = $('#opts'); box.innerHTML = '';
+    Q.o.forEach((txt, i) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'opt';
+      b.innerHTML = '<span class="k">' + 'ABCD'[i] + '</span><span></span>'; b.lastChild.textContent = txt;
+      b.addEventListener('click', () => answer(i)); box.appendChild(b);
+    });
+    $('#fb').hidden = true;
+  }
+  function answer(i) {
+    const Q = QS[qi], btns = $$('#opts .opt');
+    btns.forEach(b => b.disabled = true);
+    btns[Q.a].classList.add('right');
+    const ok = i === Q.a;
+    if (!ok) btns[i].classList.add('wrong');
+    const gain = ok ? (score < 50 ? 14 : 9) : 0;
+    setScore(ok ? Math.min(100, score + gain) : Math.max(0, score - 4));
+    if (ok) { pop.textContent = '+' + gain; pop.classList.add('show'); setTimeout(() => pop.classList.remove('show'), 1100); }
+    const fb = $('#fb');
+    fb.innerHTML = '<div><b class="' + (ok ? 'ok' : 'no') + '">' + (ok ? 'Nice. ' : 'Not quite. ') + '</b><span></span></div><div class="row"><span class="hand" style="font-size:22px;color:var(--muted)">that\'s one. your units have hundreds.</span><button class="btn btn-small" type="button" id="nextQ">Next question</button></div>';
+    fb.querySelector('span').textContent = Q.e;
+    fb.hidden = false;
+    $('#nextQ').addEventListener('click', () => { qi = (qi + 1) % QS.length; renderQ(); });
+  }
+  renderQ();
+
+  /* exam planner */
+  const UNITS = [
+    { name: 'Intro to Psychology', weeks: [96, 88, 74, 41, 63, 22, 55, 12, 0, 0, 0, 0],
+      titles: ['What is psychology', 'Research methods', 'The brain', 'Learning and conditioning', 'Memory', 'Motivation', 'Emotion', 'Development', 'Personality', 'Social', 'Disorders', 'Revision'] },
+    { name: 'Contract Law', weeks: [100, 92, 81, 70, 47, 18, 34, 60, 9, 0, 0, 0],
+      titles: ['Offer', 'Acceptance', 'Consideration', 'Intention', 'Terms', 'Misrepresentation', 'Mistake', 'Duress', 'Frustration', 'Breach', 'Remedies', 'Revision'] },
+    { name: 'Principles of Marketing', weeks: [90, 85, 58, 66, 30, 44, 71, 15, 25, 0, 0, 0],
+      titles: ['What is marketing', 'Environment', 'Segmentation', 'Consumer behaviour', 'Branding', 'Product', 'Price', 'Place', 'Promotion', 'Digital', 'Services', 'Revision'] }
+  ];
+  let ui = 0; const inExam = UNITS.map(u => u.weeks.map((_, i) => i < 9));
+  const tabs = $('#unitTabs'), grid = $('#weeks');
+  UNITS.forEach((u, i) => {
+    const t = document.createElement('button'); t.type = 'button'; t.className = 'unit-tab'; t.setAttribute('role', 'tab'); t.textContent = u.name;
+    t.addEventListener('click', () => { ui = i; drawPlanner(); }); tabs.appendChild(t);
+  });
+  function drawPlanner() {
+    $$('.unit-tab', tabs).forEach((t, i) => t.setAttribute('aria-selected', i === ui));
+    const U = UNITS[ui]; grid.innerHTML = '';
+    U.weeks.forEach((m, i) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'week' + (m >= 60 ? ' hot' : '');
+      b.style.setProperty('--m', m); b.setAttribute('aria-pressed', inExam[ui][i]);
+      b.title = 'Week ' + (i + 1) + ': ' + U.titles[i];
+      b.innerHTML = '<span class="chk"></span><span class="wk">WK ' + (i + 1) + '</span><span class="pc">' + m + '%</span>';
+      b.addEventListener('click', () => { inExam[ui][i] = !inExam[ui][i]; drawPlanner(); });
+      grid.appendChild(b);
+    });
+    const sel = U.weeks.map((m, i) => ({ m, i })).filter(w => inExam[ui][w.i]);
+    const pct = sel.length ? Math.round(sel.reduce((s, w) => s + w.m, 0) / sel.length) : 0;
+    $('#ready').firstChild.nodeValue = pct;
+    $('#readyNote').textContent = sel.length ? sel.length + ' weeks on the exam. Start with these:' : 'Pick at least one week to see how ready you are.';
+    const weak = sel.slice().sort((a, b) => a.m - b.m).slice(0, 3);
+    const wk = $('#weakest'); wk.innerHTML = '';
+    weak.forEach(w => { const d = document.createElement('div'); d.innerHTML = '<b></b><span>' + w.m + '%</span>'; d.firstChild.textContent = 'Week ' + (w.i + 1) + ': ' + U.titles[w.i]; wk.appendChild(d); });
+  }
+  drawPlanner();
+
+  /* question type cards */
+  const T = [
+    ['Multiple choice', 'var(--hl-yellow)', '<div>Which is a demographic variable?</div><div class="minirow"><span class="chipx">Lifestyle</span><span class="chipx" style="background:var(--good-soft);border-color:var(--good)">Age</span><span class="chipx">Values</span></div>'],
+    ['Drag to match', 'var(--hl-pink)', '<div class="minirow"><span class="chipx">Pavlov</span><span class="chipx">Skinner</span></div><div class="minirow"><span class="slot">classical</span><span class="slot">operant</span></div>'],
+    ['Put in order', 'var(--hl-blue)', '<div class="chipx">1. Need recognition</div><div class="chipx">2. Information search</div><div class="chipx">3. Evaluate options</div>'],
+    ['Sort it', 'var(--hl-green)', '<div class="minirow" style="justify-content:space-between"><span>Listing on eBay</span><span><span class="radio on"></span> <span class="radio"></span></span></div><div class="minirow" style="justify-content:space-between"><span>Price tag in a shop</span><span><span class="radio"></span> <span class="radio on"></span></span></div><div style="font-size:11.5px;color:var(--muted)">offer / invitation to treat</div>'],
+    ['Fill the gap', 'var(--hl-orange)', '<div>Memory that holds about 7 items is <span class="gap"></span> memory.</div>'],
+    ['Fix the error', 'var(--hl-pink)', '<div>Negative reinforcement <span class="squig">adds</span> an unpleasant stimulus.</div>'],
+    ['Read the case', 'var(--hl-blue)', '<div>Mrs K, 78, is newly confused and her obs have changed since this morning.</div><div class="chipx">What is your first action?</div>'],
+    ['Tick the grid', 'var(--hl-green)', '<div class="minirow" style="justify-content:space-between"><span>Uses price to signal quality</span><span class="radio on" style="border-radius:3px"></span></div><div class="minirow" style="justify-content:space-between"><span>Targets the mass market</span><span class="radio" style="border-radius:3px"></span></div>'],
+    ['Read the chart', 'var(--hl-yellow)', '<svg viewBox="0 0 200 60" style="width:100%;height:56px"><path d="M4 56h192" stroke="var(--line)" stroke-width="2"/><rect x="16" y="30" width="26" height="26" fill="var(--hl-blue)" stroke="var(--ink)" stroke-width="1.5"/><rect x="62" y="12" width="26" height="44" fill="var(--hl-pink)" stroke="var(--ink)" stroke-width="1.5"/><rect x="108" y="38" width="26" height="18" fill="var(--hl-green)" stroke="var(--ink)" stroke-width="1.5"/><rect x="154" y="22" width="26" height="34" fill="var(--hl-orange)" stroke="var(--ink)" stroke-width="1.5"/></svg><div>Which segment grew fastest?</div>'],
+    ['Type the answer', 'var(--hl-orange)', '<div>Name the part of a neuron that receives signals.</div><div class="slot" style="width:100%">type here</div>'],
+    ['Analogies', 'var(--hl-pink)', '<div>Offer is to acceptance as question is to <span class="gap"></span></div>'],
+    ['Plot the graph', 'var(--hl-blue)', '<svg viewBox="0 0 200 60" style="width:100%;height:56px"><path d="M10 6v48h180" fill="none" stroke="var(--ink)" stroke-width="2"/><path d="M20 50 180 12" stroke="var(--good)" stroke-width="2.5" stroke-dasharray="5 4"/><circle cx="60" cy="40" r="4" fill="var(--ink)"/><circle cx="140" cy="21" r="4" fill="var(--ink)"/></svg><div>Plot the supply curve.</div>']
+  ];
+  const card = ([h, c, b]) => '<div class="mini" style="--c:' + c + '"><h5><i></i>' + h + '</h5><div class="body">' + b + '</div></div>';
+  const half = Math.ceil(T.length / 2);
+  const a1 = T.slice(0, half).map(card).join(''), a2 = T.slice(half).map(card).join('');
+  $('#track1').innerHTML = a1 + (reduce ? '' : a1);
+  $('#track2').innerHTML = a2 + (reduce ? '' : a2);
+
+  /* night mode */
+  const lights = $('#lights');
+  function setDark(on) {
+    lights.setAttribute('aria-checked', on);
+    $('#lightsLbl').textContent = on ? 'Lights on' : 'Lights off';
+    if (on) document.documentElement.setAttribute('data-theme', 'dark'); else document.documentElement.removeAttribute('data-theme');
+  }
+  lights.addEventListener('click', () => setDark(lights.getAttribute('aria-checked') !== 'true'));
+  $('#navLights').addEventListener('click', () => setDark(document.documentElement.getAttribute('data-theme') !== 'dark'));
+  $$('.goal').forEach(g => g.addEventListener('click', () => {
+    $$('.goal').forEach(x => x.setAttribute('aria-pressed', x === g));
+    const n = +g.dataset.g; $('#goalN').textContent = n; $('#goalBar').style.width = Math.round(8 / n * 100) + '%';
+  }));
+
+  /* scroll: parallax, NO list, story */
+  const floats = $$('.float'), play = $('#play');
+  const reveals = $$('.reveal');
+  const story = $('.story'), L = [$('#L0'), $('#L1'), $('#L2')], steps = $$('.steps li');
+  const files = $$('.file'), skills = $$('.skill');
+  const big = $('#bigScore'), bar = $('#bigBar'), stamp = $('#stamp'), qc = $('#qCount'), tc = $('#tCount');
+  const win = (p, a, b) => clamp((p - a) / (b - a));
+
+  function frame() {
+    const vh = innerHeight;
+    if (!reduce) {
+      const pr = play.getBoundingClientRect();
+      floats.forEach(f => { f.style.transform = 'translateY(' + clamp((pr.top - vh / 3) * +f.dataset.speed, -50, 50).toFixed(1) + 'px)'; });
+      reveals.forEach(r => { const t = r.getBoundingClientRect().top; r.style.setProperty('--o', clamp((vh * 0.95 - t) / (vh * 0.25)).toFixed(3)); });
+    }
+    const r = story.getBoundingClientRect();
+    const total = story.offsetHeight - vh;
+    const p = reduce ? 1 : clamp(-r.top / total);
+    if (!reduce) {
+      const o = [1 - win(p, 0.30, 0.38), win(p, 0.34, 0.42) * (1 - win(p, 0.62, 0.70)), win(p, 0.66, 0.74)];
+      o.forEach((v, i) => { L[i].style.opacity = v.toFixed(3); L[i].style.transform = 'translateY(' + ((1 - v) * 24).toFixed(1) + 'px) scale(' + (0.96 + v * 0.04).toFixed(3) + ')'; });
+      files.forEach((f, i) => { const k = ease(win(p, 0.02 + i * 0.05, 0.12 + i * 0.05)); f.style.opacity = k; f.style.transform = 'translateX(' + ((1 - k) * 60).toFixed(1) + 'px) rotate(' + ((1 - k) * 4).toFixed(2) + 'deg)'; });
+      skills.forEach((s, i) => { const k = ease(win(p, 0.40 + i * 0.035, 0.46 + i * 0.035)); s.style.opacity = k; s.style.transform = 'translateY(' + ((1 - k) * 20).toFixed(1) + 'px)'; });
+    }
+    const sc = Math.round(ease(win(p, 0.72, 0.95)) * 100);
+    big.textContent = sc; bar.style.width = sc + '%';
+    qc.textContent = Math.round(sc * 0.31) + ' questions'; tc.textContent = Math.round(sc * 0.19) + ' min';
+    stamp.style.setProperty('--st', sc >= 100 ? 1 : 0);
+    const active = p < 0.36 ? 0 : p < 0.68 ? 1 : 2;
+    steps.forEach((s, i) => s.classList.toggle('on', i === active));
+  }
+  let ticking = false;
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { frame(); ticking = false; }); } }, { passive: true });
+  addEventListener('resize', frame);
+  frame();
+})();
+</script>
+<script src="js/account.js"></script>
+<script src="js/tour.js"></script>
+</body>
+</html>

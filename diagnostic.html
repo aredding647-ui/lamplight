@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diagnostic · Lamplight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Caveat:wght@600;700&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/lamplight.css">
+<style>
+  :root { --calm-bg: #F1EFE9; --calm-line: #DEDAD0; --calm-accent: #5B7A6B; --calm-sel: #5A7895; --calm-glow: rgba(214, 190, 110, .20); }
+  :root[data-theme="dark"] { --calm-bg: #1D2023; --calm-line: #34383C; --calm-accent: #92B5A4; --calm-sel: #8EA9C6; --calm-glow: rgba(214, 190, 110, .10); }
+  .btn-calm { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .btn-calm:hover { background: var(--ink-2); }
+  .navlinks a[aria-current="page"] { background: var(--hl-yellow); color: #141414; }
+  .avatar { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--ink); background: var(--hl-pink); color: #141414; display: grid; place-items: center; font: 800 17px var(--font-display); text-decoration: none; box-shadow: 0 3px 0 var(--shadow); }
+  .icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--line); background: var(--card); display: grid; place-items: center; cursor: pointer; color: var(--ink); }
+  .icon-btn:hover { border-color: var(--ink); }
+
+  /* one big panel, like a sheet on the desk */
+  .panel { margin-top: 26px; background: var(--card); border: 2.5px solid var(--ink); border-radius: 26px; box-shadow: 0 8px 0 var(--shadow); overflow: hidden; }
+
+  /* banner */
+  .banner { position: relative; background: var(--calm-bg); color: var(--ink); text-align: center; padding: 34px 20px 0; }
+  .banner::before { content: ""; position: absolute; left: 50%; top: 40px; width: 560px; height: 360px; transform: translateX(-50%); background: radial-gradient(closest-side, var(--calm-glow), transparent 72%); pointer-events: none; }
+  .banner h1 { position: relative; font-size: clamp(26px, 3.4vw, 38px); letter-spacing: -0.03em; }
+  .banner .scene { position: relative; display: block; margin: 8px auto 0; width: 260px; max-width: 70%; height: auto; }
+  .banner .curve { display: block; width: calc(100% + 40px); margin-left: -20px; max-width: none; height: 70px; margin-top: -40px; position: relative; }
+  .banner .curve path { fill: var(--card); }
+  .cta { position: relative; margin-top: -54px; text-align: center; z-index: 2; }
+  .cta .btn { font-size: 18px; padding: 15px 30px; }
+
+  /* one subject */
+  .subj { padding: 54px 24px 10px; }
+  .subj + .subj { border-top: 2px dashed var(--line); }
+  .subj h2 { text-align: center; font-size: clamp(30px, 3.6vw, 42px); letter-spacing: -0.035em; display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .subj h2 .hl::before { background: color-mix(in srgb, var(--c) 45%, var(--card)); }
+  .subj { --wedge: color-mix(in srgb, var(--c) 62%, #8C8B85); --tint: color-mix(in srgb, var(--c) 22%, var(--card)); }
+  .subj h2 small { font: 700 12px var(--font-mono); letter-spacing: .04em; padding: 5px 9px; border-radius: 8px; border: 2px solid var(--ink); background: var(--paper); }
+
+  /* desktop: cards arranged around the fan with dashed leaders */
+  .spread { position: relative; width: 1100px; margin: 18px auto 0; }
+  .spread svg.fan { position: absolute; left: 0; top: 0; overflow: visible; }
+  .fan .arc { fill: none; stroke: var(--line); stroke-width: 1.1; }
+  .fan .spoke { stroke: var(--line); stroke-width: 1.4; }
+  .fan .lead { stroke: var(--line); stroke-width: 1.6; stroke-dasharray: 5 5; fill: none; }
+  .fan .tip { stroke: var(--card); stroke-width: 3; }
+  .fan .num { font: 700 11px var(--font-mono); fill: var(--muted); }
+  .overall { position: absolute; left: 50%; transform: translateX(-50%); text-align: center; width: 320px; }
+  .overall small { display: block; font-weight: 700; font-size: 15px; color: var(--ink-2); }
+  .overall b { display: block; font: 800 44px/1.05 var(--font-display); letter-spacing: -0.035em; font-variant-numeric: tabular-nums; margin-top: 4px; }
+  .overall b.q { color: var(--muted); }
+  .overall span { font-size: 14px; color: var(--muted); font-weight: 600; }
+
+  .wk { --c: var(--hl-blue); position: absolute; width: 256px; background: var(--card); border: 2px solid var(--ink); border-radius: 14px; box-shadow: 0 3px 0 var(--shadow); z-index: 1; }
+  .wk.open { z-index: 6; }
+  .wk .h { padding: 10px 13px 9px; display: grid; grid-template-columns: 1fr auto; gap: 1px 10px; align-items: center; min-height: 62px; }
+  .wk .h small { grid-column: 1 / -1; font: 700 10.5px var(--font-mono); letter-spacing: .06em; color: var(--muted); }
+  .wk .h b { font-size: 14px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .wk .h .sc { font: 800 24px/1.1 var(--font-display); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+  .wk .h .sc.q { color: var(--muted); }
+  .wk .f { border-top: 2px solid var(--ink); background: var(--tint); border-radius: 0 0 12px 12px; }
+  .wk .f button { width: 100%; display: flex; align-items: center; gap: 8px; padding: 8px 13px; border: 0; background: none; font: 700 13.5px var(--font-body); color: var(--ink); cursor: pointer; text-align: left; }
+  .wk .f button .cv { margin-left: auto; transition: transform .2s; }
+  .wk.open .f button .cv { transform: rotate(180deg); }
+  .wk .f p { margin: 0; padding: 8px 13px; font-size: 12.5px; line-height: 1.35; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wk.unknown { border-style: dashed; box-shadow: none; }
+  .wk.unknown .f { border-top-style: dashed; background: var(--paper); }
+  .wk.unknown .f p { color: var(--muted); }
+  .wk ul { list-style: none; margin: 0; padding: 6px 8px 8px; background: var(--card); border-top: 1.5px dashed var(--line); border-radius: 0 0 12px 12px; }
+  .wk ul a { display: block; padding: 7px 6px; border-radius: 8px; font-size: 13.5px; font-weight: 600; text-decoration: none; color: var(--ink); }
+  .wk ul a:hover { background: var(--paper-2); }
+  .wk ul a small { display: block; font: 700 10.5px var(--font-mono); color: var(--muted); }
+
+  /* smaller screens: fan on top, cards in a grid */
+  .compact { display: none; }
+  @media (max-width: 1180px) {
+    .spread { display: none; }
+    .compact { display: block; margin-top: 10px; }
+    .compact > svg.fan { width: min(100%, 520px); height: auto; display: block; margin: 0 auto; overflow: visible; }
+    .compact .overall { position: static; transform: none; width: auto; margin: 0 auto 20px; }
+    .compact .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+    .compact .wk { position: relative; width: auto; }
+  }
+
+  /* report band */
+  .report { margin-top: 40px; background: var(--calm-bg); border-top: 2px solid var(--ink); text-align: center; padding: 34px 20px 38px; }
+  .report p { font-size: 19px; margin: 0 0 16px; color: var(--ink); }
+  .pagefoot { margin-top: 70px; border-top: 2px solid var(--ink); padding-block: 24px 40px; color: var(--muted); font-size: 14px; }
+
+  /* the printable action plan */
+  #plan { display: none; }
+  @media print {
+    body { background: #fff !important; }
+    body > *:not(#plan) { display: none !important; }
+    #plan { display: block; font: 11pt/1.45 var(--font-body); color: #111; }
+    #plan h1 { font: 800 22pt var(--font-display); margin: 0 0 4px; }
+    #plan h2 { font: 800 15pt var(--font-display); margin: 22px 0 6px; }
+    #plan table { width: 100%; border-collapse: collapse; }
+    #plan th, #plan td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #ccc; vertical-align: top; }
+    #plan th { font-size: 9pt; text-transform: uppercase; letter-spacing: .06em; color: #555; }
+    #plan .meta { color: #555; }
+  }
+</style>
+<script src="js/config.js"></script>
+<script src="js/sync.js"></script>
+</head>
+<body class="app">
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="bar">
+      <a class="brand" href="index.html" aria-label="Lamplight home">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 14 16 4l8 10Z" fill="var(--hl-yellow)" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><path d="M11 17 5 29h22l-6-12Z" fill="var(--hl-yellow)" opacity=".45"/><circle cx="16" cy="15.5" r="2" fill="var(--ink)"/></svg>
+        Lamplight
+      </a>
+      <nav class="navlinks" aria-label="Main">
+        <a href="index.html">Home</a>
+        <a href="subject.html">Learning</a>
+        <a href="diagnostic.html" aria-current="page">Diagnostic</a>
+        <a href="analytics.html">Analytics</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn" type="button" id="lights" aria-label="Turn lights off" title="Lights off">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
+        </button>
+        <a class="avatar" href="account.html" aria-label="Your account">S</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="panel">
+    <div class="banner">
+      <h1 id="bannerH">Keep diagnosing to reveal all of your levels!</h1>
+      <svg class="scene" viewBox="0 0 260 150" aria-hidden="true">
+        <g fill="var(--muted)" opacity=".55"><path d="M30 34l2 5 5 2-5 2-2 5-2-5-5-2 5-2Z"/><path d="M228 22l1.6 4 4 1.6-4 1.6-1.6 4-1.6-4-4-1.6 4-1.6Z"/><path d="M206 70l1.2 3 3 1.2-3 1.2-1.2 3-1.2-3-3-1.2 3-1.2Z"/><circle cx="58" cy="78" r="2"/><circle cx="196" cy="40" r="2"/></g>
+        <path d="M84 70 L176 70 L208 132 L52 132 Z" fill="var(--calm-glow)"/>
+        <path d="M112 20 L148 20 L162 62 L98 62 Z" fill="#E9D98F" stroke="var(--ink)" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M130 62 v10" stroke="var(--ink)" stroke-width="3"/><circle cx="130" cy="74" r="5" fill="#FFF3B0"/>
+        <path d="M130 20 L130 8 L96 -2" stroke="var(--ink)" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <rect x="66" y="118" width="128" height="14" rx="3" fill="#C9D3DC" stroke="var(--ink)" stroke-width="2.5"/>
+        <rect x="76" y="106" width="108" height="12" rx="3" fill="#DCCFC9" stroke="var(--ink)" stroke-width="2.5"/>
+        <rect x="88" y="95" width="84" height="11" rx="3" fill="#C8D6CC" stroke="var(--ink)" stroke-width="2.5"/>
+      </svg>
+      <svg class="curve" viewBox="0 0 1200 70" preserveAspectRatio="none" aria-hidden="true"><path d="M0 70 L0 34 Q600 -26 1200 34 L1200 70 Z"/></svg>
+    </div>
+    <div class="cta"><a class="btn btn-calm" id="enter" href="arena.html">Step into the Arena</a></div>
+
+    <div id="subjects"></div>
+
+    <div class="report">
+      <p>Want a full report of your current levels and recommended skills?</p>
+      <button class="btn" type="button" id="printBtn">Print Diagnostic Action Plan</button>
+    </div>
+  </div>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">Levels come from your diagnostic answers, blended with your SmartScores from practice. Saved in this browser.</div>
+</footer>
+
+<section id="plan" aria-hidden="true"></section>
+
+<script src="data/units.js"></script>
+<script src="js/account.js"></script>
+<script src="js/subnav.js"></script>
+<script src="js/diag-core.js"></script>
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const G = window.LamplightDiag, esc = window.Lamplight.esc;
+  const PAL = ['var(--hl-blue)', 'var(--hl-pink)', 'var(--hl-green)', 'var(--hl-orange)', 'var(--hl-yellow)'];
+  const SOLID = ['#5FA8E8', '#F07AAE', '#4FC27F', '#F39A4B', '#E8C23A'];
+  let open = null;
+
+  const flag = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 22V3h2v1h12l-2.5 5L19 14H7v8Z"/></svg>';
+  const chev = '<svg class="cv" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+
+  /* a level with one answer behind it is shown as a range, like IXL does */
+  function show(L) {
+    if (L.v == null) return { txt: '?', q: true, range: null };
+    if (L.n < 2) { const lo = Math.max(0, L.v - 15), hi = Math.min(100, L.v + 15); return { txt: lo + ' to ' + hi, range: [lo, hi] }; }
+    return { txt: String(L.v), range: null };
+  }
+  function levels(s) { return s.U.weekList.map((w, i) => Object.assign({ w: w.week, topic: w.topic, i }, G.weekLevel(s.U.code, w.week))); }
+  function overall(L) {
+    const k = L.filter(x => x.v != null); if (!k.length) return null;
+    const m = Math.round(k.reduce((a, x) => a + x.v, 0) / k.length);
+    return k.length < Math.ceil(L.length / 2) ? { txt: Math.max(0, m - 12) + ' to ' + Math.min(100, m + 12), m } : { txt: String(m), m };
+  }
+
+  function cardHTML(s, x, style) {
+    const id = s.U.code + '-' + x.w, sh = show(x), isOpen = open === id;
+    const recs = x.v != null && !sh.range ? G.recSkills(s.U.code, x.w, x.v >= 85 ? 1 : 2) : [];
+    let f;
+    if (sh.q || sh.range) f = '<p>Keep diagnosing to reveal your score!</p>';
+    else f = '<button type="button" data-card="' + id + '" aria-expanded="' + isOpen + '">' + flag + recs.length + ' recommended skill' + (recs.length === 1 ? '' : 's') + chev + '</button>';
+    return '<div class="wk' + (sh.q ? ' unknown' : '') + (isOpen ? ' open' : '') + '" style="' + (style || '') + '">' +
+      '<div class="h"><small>WEEK ' + x.w + '</small><b>' + esc(x.topic) + '</b><span class="sc' + (sh.q ? ' q' : '') + '">' + sh.txt + '</span></div>' +
+      '<div class="f">' + f + '</div>' +
+      (isOpen && recs.length ? '<ul>' + recs.map(r => '<li><a href="practice.html#' + r.k.id + '"><small>' + esc(r.k.id) + '</small>' + esc(r.k.name) + '</a></li>').join('') + '</ul>' : '') + '</div>';
+  }
+
+  /* wedge + star, drawn from the centre out to the level */
+  function wedge(cx, cy, ang, r0, r, col, star) {
+    const ux = Math.cos(ang), uy = -Math.sin(ang), px = -uy, py = ux, w = 11;
+    const tx = cx + ux * r, ty = cy + uy * r;
+    let s = '<path d="M' + (cx + px * 1.5) + ' ' + (cy + py * 1.5) + ' L' + (tx + px * w) + ' ' + (ty + py * w) + ' L' + (tx - px * w) + ' ' + (ty - py * w) + ' L' + (cx - px * 1.5) + ' ' + (cy - py * 1.5) + 'Z" style="fill:' + col + '" fill-opacity=".38"/>';
+    s += '<circle class="tip" cx="' + tx + '" cy="' + ty + '" r="15" style="fill:' + col + '"/>';
+    if (star) s += '<path transform="translate(' + tx + ' ' + ty + ') scale(.95)" d="M0-8.5l2.5 5.3 5.8.8-4.2 4 1 5.7L0 4.6-5.1 7.3l1-5.7-4.2-4 5.8-.8Z" fill="#fff"/>';
+    return s;
+  }
+  function capsule(cx, cy, ang, a, b, col) {
+    const ux = Math.cos(ang), uy = -Math.sin(ang);
+    return '<line x1="' + (cx + ux * a) + '" y1="' + (cy + uy * a) + '" x2="' + (cx + ux * b) + '" y2="' + (cy + uy * b) + '" style="stroke:' + col + '" stroke-width="12" stroke-linecap="round" stroke-opacity=".7"/>';
+  }
+  function marks(L, cx, cy, R0, R) {
+    let s = ''; const N = L.length;
+    L.forEach((x, i) => {
+      const ang = Math.PI - (i + 0.5) * Math.PI / N, sh = show(x), col = 'var(--wedge)';
+      if (sh.q) return;
+      if (sh.range) s += capsule(cx, cy, ang, R0 + (R - R0) * sh.range[0] / 100, R0 + (R - R0) * sh.range[1] / 100, col);
+      else s += wedge(cx, cy, ang, R0, R0 + (R - R0) * x.v / 100, col, true);
+    });
+    return s;
+  }
+  function arcs(cx, cy, R0, R, n) { let s = ''; for (let k = 0; k <= n; k++) { const r = R0 + (R - R0) * k / n; s += '<path class="arc" d="M' + (cx - r) + ' ' + cy + ' A' + r + ' ' + r + ' 0 0 1 ' + (cx + r) + ' ' + cy + '"/>'; } return s; }
+
+  function spread(s, L) {
+    const N = L.length, W = 1100, CW = 256, ROW = 128, CH = 112;
+    const mid = N % 2 ? (N - 1) / 2 : -1, side = Math.floor(N / 2);
+    const R = 250, R0 = 18, cy = Math.max((side - 1) * ROW + 64, R + CH + 70), H = cy + 130, cx = W / 2;
+    let svg = '<svg class="fan" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" aria-hidden="true">' + arcs(cx, cy, R0 + 14, R, 12);
+    let cards = '';
+    L.forEach((x, i) => {
+      const ang = Math.PI - (i + 0.5) * Math.PI / N, ux = Math.cos(ang), uy = -Math.sin(ang);
+      const ex = cx + ux * (R + 10), ey = cy + uy * (R + 10);
+      svg += '<line class="spoke" x1="' + (cx + ux * R0) + '" y1="' + (cy + uy * R0) + '" x2="' + ex + '" y2="' + ey + '"/>';
+      let left, top, ax, ay;
+      if (i === mid) { left = cx - CW / 2; top = cy - R - 30 - CH; ax = cx; ay = top + CH; }
+      else if (i < side) { const j = i; left = 8; top = cy - 64 - j * ROW; ax = left + CW; ay = top + 38; }
+      else { const j = N - 1 - i; left = W - 8 - CW; top = cy - 64 - j * ROW; ax = left; ay = top + 38; }
+      svg += '<path class="lead" d="M' + ex + ' ' + ey + ' L' + ax + ' ' + ay + '"/>';
+      cards += cardHTML(s, x, 'left:' + left + 'px;top:' + top + 'px');
+    });
+    svg += marks(L, cx, cy, R0 + 44, R) + '<circle cx="' + cx + '" cy="' + cy + '" r="5" fill="var(--ink)"/></svg>';
+    const ov = overall(L);
+    return '<div class="spread" style="height:' + H + 'px">' + svg + cards +
+      '<div class="overall" style="top:' + (cy + 18) + 'px"><small>Overall ' + esc(s.U.name) + ' level</small>' + (ov ? '<b>' + ov.txt + '</b>' : '<b class="q">?</b>') + '<span>' + L.filter(x => x.v != null).length + ' of ' + N + ' weeks known</span></div></div>';
+  }
+  function compact(s, L) {
+    const N = L.length, cx = 260, cy = 250, R = 220, R0 = 16;
+    let svg = '<svg viewBox="0 0 520 290" aria-hidden="true" class="fan">' + arcs(cx, cy, R0 + 12, R, 10);
+    L.forEach((x, i) => { const ang = Math.PI - (i + 0.5) * Math.PI / N, ux = Math.cos(ang), uy = -Math.sin(ang);
+      svg += '<line class="spoke" x1="' + (cx + ux * R0) + '" y1="' + (cy + uy * R0) + '" x2="' + (cx + ux * R) + '" y2="' + (cy + uy * R) + '"/><text class="num" text-anchor="middle" x="' + (cx + ux * (R + 16)) + '" y="' + (cy + uy * (R + 16) + 4) + '">' + x.w + '</text>'; });
+    svg += marks(L, cx, cy, R0 + 44, R) + '<circle cx="' + cx + '" cy="' + cy + '" r="5" fill="var(--ink)"/></svg>';
+    const ov = overall(L);
+    return '<div class="compact">' + svg + '<div class="overall"><small>Overall ' + esc(s.U.name) + ' level</small>' + (ov ? '<b>' + ov.txt + '</b>' : '<b class="q">?</b>') + '<span>' + L.filter(x => x.v != null).length + ' of ' + N + ' weeks known</span></div><div class="grid">' + L.map(x => cardHTML(s, x, '')).join('') + '</div></div>';
+  }
+
+  function render() {
+    const subs = G.subjects(), ordered = subs.filter(s => !s.done).concat(subs.filter(s => s.done));
+    let unknown = 0;
+    $('#subjects').innerHTML = ordered.map(s => {
+      const L = levels(s); unknown += L.filter(x => x.v == null || x.n < 2).length;
+      return '<section class="subj" style="--c:' + s.colour + '"><h2><span class="hl">' + esc(s.U.name) + '</span>' + (s.done ? '<small>T1 · COMPLETED</small>' : '') + '</h2>' + spread(s, L) + compact(s, L) + '</section>';
+    }).join('') || '<section class="subj"><h2>No subjects yet</h2><p style="text-align:center">Add a subject and upload a week to get your first levels.</p></section>';
+    $('#bannerH').textContent = unknown ? 'Keep diagnosing to reveal all of your levels!' : 'All your levels are revealed. Keep going to keep them sharp!';
+  }
+
+  function plan() {
+    const LP = window.Lamplight.profile, p = (typeof LP === 'function' ? LP() : LP) || {};
+    let h = '<h1>Diagnostic Action Plan</h1><div class="meta">' + esc(p.name || '') + ' · ' + new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' }) + '</div>';
+    G.subjects().forEach(s => {
+      const L = levels(s), ov = overall(L);
+      h += '<h2>' + esc(s.U.name) + ' (' + esc(s.U.code) + ')' + (ov ? ', overall ' + ov.txt : '') + '</h2><table><tr><th>Week</th><th>Topic</th><th>Level</th><th>Recommended skills</th></tr>' +
+        L.map(x => { const sh = show(x), recs = x.v != null ? G.recSkills(s.U.code, x.w, 2) : []; return '<tr><td>' + x.w + '</td><td>' + esc(x.topic) + '</td><td>' + (sh.q ? 'Not yet known' : sh.txt) + '</td><td>' + (recs.length && !sh.q ? recs.map(r => esc(r.k.id + ' ' + r.k.name)).join('<br>') : 'Keep diagnosing') + '</td></tr>'; }).join('') + '</table>';
+    });
+    $('#plan').innerHTML = h;
+  }
+
+  document.addEventListener('click', e => {
+    const c = e.target.closest('[data-card]');
+    if (c) { open = open === c.dataset.card ? null : c.dataset.card; render(); return; }
+    if (e.target.closest('#printBtn')) { plan(); window.print(); return; }
+    if (open && !e.target.closest('.wk')) { open = null; render(); }
+  });
+  window.addEventListener('lamplight:subjects', render);
+  $('#lights').addEventListener('click', () => { const d = document.documentElement.getAttribute('data-theme') === 'dark'; if (d) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', 'dark'); });
+  render();
+})();
+</script>
+<script src="js/tour.js"></script>
+</body>
+</html>

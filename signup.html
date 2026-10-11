@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sign up · Lamplight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Caveat:wght@600;700&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/lamplight.css">
+<style>
+  .topbar .bar { padding-right: 14px; }
+  .have { margin-left: auto; font-size: 15px; color: var(--ink-2); }
+  .have a { font-weight: 700; color: var(--ink); text-decoration: underline; text-decoration-color: var(--hl-yellow); text-decoration-thickness: 3px; text-underline-offset: 3px; }
+  @media (max-width: 480px) { .have span { display: none; } }
+
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .85fr); gap: 48px; align-items: start; padding-block: 40px 60px; }
+  @media (max-width: 940px) { .layout { grid-template-columns: 1fr; gap: 32px; } }
+  @media (max-width: 600px) { .phone { width: 250px; } .screen { min-height: 0; } }
+
+  /* steps */
+  .steps { display: flex; gap: 8px; margin-bottom: 26px; flex-wrap: wrap; }
+  .step { display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px 7px 7px; border-radius: 99px; border: 2px solid var(--line); background: var(--card); font-weight: 700; font-size: 13.5px; color: var(--muted); }
+  .step i { width: 24px; height: 24px; border-radius: 99px; display: grid; place-items: center; font: 800 12px var(--font-display); font-style: normal; background: var(--paper-2); color: var(--muted); }
+  .step.on { border-color: var(--ink); color: var(--ink); box-shadow: 0 3px 0 var(--shadow); }
+  .step.on i { background: var(--hl-yellow); color: #141414; }
+  .step.done { color: var(--ink-2); }
+  .step.done i { background: var(--good); color: #fff; }
+  @media (max-width: 560px) { .step span { display: none; } .step { padding: 7px; } }
+
+  .card { background: var(--card); border: 2.5px solid var(--ink); border-radius: 26px; box-shadow: 0 8px 0 var(--shadow); padding: 32px; }
+  @media (max-width: 600px) { .card { padding: 22px 18px; } }
+  .card .hand { font-size: 26px; color: var(--muted); transform: rotate(-2deg); display: inline-block; }
+  .card h1 { font-size: clamp(38px, 5vw, 60px); letter-spacing: -0.045em; margin: 4px 0 0; }
+  .card .lede { color: var(--ink-2); font-size: 17px; margin: 12px 0 24px; }
+  form { display: grid; gap: 18px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 560px) { .row2 { grid-template-columns: 1fr; } }
+  .field { display: grid; gap: 7px; }
+  .field > span, .field > legend { font-weight: 700; font-size: 14px; padding: 0; }
+  .field em { font-style: normal; color: var(--muted); font-weight: 500; }
+  fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
+  .field input, .field select { font: 600 17px var(--font-body); padding: 13px 14px; border-radius: 12px; border: 2px solid var(--line); background: var(--paper); color: var(--ink); width: 100%; }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--ink); box-shadow: 0 3px 0 var(--shadow); }
+  .field input[aria-invalid="true"] { border-color: var(--bad); }
+  .field .err { color: var(--bad); font-size: 13.5px; font-weight: 600; }
+  .pw { position: relative; }
+  .pw button { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: 0; background: var(--card); border-radius: 8px; padding: 6px 10px; font-weight: 700; font-size: 13px; cursor: pointer; color: var(--ink-2); }
+  .meter { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 2px; }
+  .meter i { height: 6px; border-radius: 99px; background: var(--paper-2); }
+  .meter.s1 i:nth-child(-n+1) { background: var(--bad); }
+  .meter.s2 i:nth-child(-n+2) { background: var(--hl-orange); }
+  .meter.s3 i:nth-child(-n+3) { background: var(--hl-yellow); }
+  .meter.s4 i { background: var(--good); }
+  .hintline { font-size: 13px; color: var(--muted); }
+
+  .sso { display: grid; gap: 10px; }
+  .sso .btn { justify-content: flex-start; width: 100%; font-weight: 700; text-align: left; line-height: 1.25; }
+  .sso .btn svg { flex: none; }
+  .or { margin: 20px 0 16px; display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .or::before, .or::after { content: ""; flex: 1; height: 2px; background: var(--line); border-radius: 2px; }
+
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip-b { padding: 10px 14px; border-radius: 12px; border: 2px solid var(--line); background: var(--paper); font-weight: 700; font-size: 15px; cursor: pointer; color: var(--ink); }
+  .chip-b[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+  .swatch { width: 42px; height: 42px; border-radius: 12px; border: 2px solid var(--ink); cursor: pointer; }
+  .swatch[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--card), 0 0 0 5px var(--ink); }
+  .goalcards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  @media (max-width: 480px) { .goalcards { grid-template-columns: 1fr; } }
+  .goalc { text-align: left; padding: 14px; border-radius: 16px; border: 2px solid var(--line); background: var(--paper); cursor: pointer; display: grid; gap: 2px; color: var(--ink); }
+  .goalc b { font: 800 28px/1 var(--font-display); letter-spacing: -0.03em; }
+  .goalc small { color: var(--muted); font-weight: 600; font-size: 13px; }
+  .goalc[aria-pressed="true"] { border-color: var(--ink); background: var(--hl-green); color: #141414; box-shadow: 0 3px 0 var(--shadow); }
+  .goalc[aria-pressed="true"] small { color: #3A3A37; }
+  .check { display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px; color: var(--ink-2); cursor: pointer; }
+  .check input { width: 20px; height: 20px; accent-color: var(--ink); margin-top: 1px; flex: none; }
+
+  .actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+  .skip { background: none; border: 0; padding: 0; font-weight: 700; color: var(--muted); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .fine { font-size: 13px; color: var(--muted); margin: 0; }
+
+  /* live preview */
+  .preview { position: sticky; top: 110px; }
+  @media (max-width: 940px) { .preview { position: static; } }
+  .phone { width: 320px; max-width: 100%; margin-inline: auto; border: 3px solid var(--ink); border-radius: 46px; padding: 12px; background: #0F1113; box-shadow: 0 10px 0 var(--shadow); transform: rotate(2deg); }
+  @media (max-width: 940px) { .phone { transform: none; width: 290px; } }
+  .screen { border-radius: 35px; background: var(--paper); color: var(--ink); padding: 20px 16px 18px; min-height: 520px; display: flex; flex-direction: column; gap: 12px; background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 22px 22px; }
+  @media (max-width: 940px) { .screen { min-height: 380px; } }
+  .screen .top { display: flex; justify-content: space-between; font: 600 11.5px var(--font-mono); color: var(--muted); }
+  .screen h6 { margin: 8px 0 0; font: 800 28px/1.02 var(--font-display); letter-spacing: -0.035em; overflow-wrap: anywhere; }
+  .screen .sub { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .mini-tab { display: flex; gap: 6px; flex-wrap: wrap; }
+  .mini-tab span { font-size: 12px; font-weight: 700; padding: 6px 9px; border-radius: 9px; border: 1.5px solid var(--ink); background: var(--card); display: inline-flex; align-items: center; gap: 6px; }
+  .mini-tab span i { width: 9px; height: 9px; border-radius: 3px; border: 1.5px solid var(--ink); }
+  .mini-tab .ghost { border-style: dashed; border-color: var(--muted); color: var(--muted); }
+  .pcard { background: var(--card); border: 2px solid var(--ink); border-radius: 16px; padding: 12px; display: grid; gap: 8px; }
+  .pcard b { font-size: 14px; }
+  .pbar { height: 10px; border-radius: 99px; background: var(--paper-2); border: 1.5px solid var(--ink); overflow: hidden; }
+  .pbar i { display: block; height: 100%; background: var(--good); width: 0; transition: width .5s; }
+  .pcard small { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .weekstrip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+  .weekstrip i { aspect-ratio: 1; border-radius: 6px; border: 1.5px dashed var(--line); background: var(--card); }
+  .weekstrip i.c { border: 1.5px solid var(--ink); }
+  .screen .moon { margin-top: auto; text-align: center; font-family: var(--font-hand); font-size: 22px; color: var(--muted); }
+  .preview .note { text-align: center; font-family: var(--font-hand); font-size: 24px; color: var(--muted); margin-top: 18px; transform: rotate(-2deg); }
+
+  /* done */
+  .done-list { display: grid; gap: 10px; margin: 6px 0 4px; padding: 0; list-style: none; }
+  .done-list li { display: flex; gap: 10px; align-items: center; padding: 12px 14px; border-radius: 14px; background: var(--paper); border: 2px solid var(--line); font-weight: 600; }
+  .done-list li svg { flex: none; color: var(--good); }
+  .confetti { position: fixed; inset: 0; pointer-events: none; z-index: 80; overflow: hidden; }
+  .confetti i { position: absolute; top: -20px; width: 12px; height: 18px; border-radius: 3px; border: 1.5px solid var(--ink); animation: fall 1.6s cubic-bezier(.3,.6,.6,1) forwards; }
+  @keyframes fall { to { transform: translateY(110vh) rotate(540deg); } }
+</style>
+<script src="js/config.js"></script>
+<script src="js/sync.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="bar">
+      <a class="brand" href="index.html" aria-label="Lamplight home">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 14 16 4l8 10Z" fill="var(--hl-yellow)" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><path d="M11 17 5 29h22l-6-12Z" fill="var(--hl-yellow)" opacity=".45"/><circle cx="16" cy="15.5" r="2" fill="var(--ink)"/></svg>
+        Lamplight
+      </a>
+      <p class="have"><span>Already have an account? </span><a href="recommendations.html">Sign in</a></p>
+    </div>
+  </div>
+</header>
+
+<main class="wrap layout">
+  <div>
+    <ol class="steps" id="steps" aria-label="Sign up steps" style="list-style:none;padding:0"></ol>
+    <section class="card" id="card" aria-live="polite"></section>
+  </div>
+
+  <aside class="preview" aria-label="Preview of your Lamplight">
+    <div class="phone" aria-hidden="true">
+      <div class="screen">
+        <div class="top"><span id="pvTime">9:41 pm</span><span>Lamplight</span></div>
+        <h6 id="pvHi">Hi there.</h6>
+        <span class="sub" id="pvCourse">Your course goes here</span>
+        <div class="mini-tab" id="pvTabs"><span class="ghost">+ Add your first subject</span></div>
+        <div class="pcard"><b id="pvGoal">Tonight: 20 questions</b><div class="pbar"><i id="pvBar"></i></div><small id="pvGoalNote">then bed. promise.</small></div>
+        <div class="pcard"><b id="pvSubName">(Subject)</b><div class="weekstrip" id="pvWeeks"></div><small id="pvWeeksNote">12 weeks, ready for uploads</small></div>
+        <div class="moon" id="pvMoon">lights off from 9pm</div>
+      </div>
+    </div>
+    <p class="note">this is you in a minute</p>
+  </aside>
+</main>
+
+<script src="js/account.js"></script>
+<script src="js/subnav.js"></script>
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = window.Lamplight.esc;
+  const UNIS = ['Australian Catholic University', 'Australian National University', 'Bond University', 'Central Queensland University', 'Charles Darwin University', 'Charles Sturt University', 'Curtin University', 'Deakin University', 'Edith Cowan University', 'Federation University', 'Flinders University', 'Griffith University', 'James Cook University', 'La Trobe University', 'Macquarie University', 'Monash University', 'Murdoch University', 'Queensland University of Technology', 'RMIT University', 'Southern Cross University', 'Swinburne University of Technology', 'The University of Adelaide', 'The University of Melbourne', 'The University of Queensland', 'The University of Sydney', 'The University of Western Australia', 'University of Canberra', 'University of New England', 'University of Newcastle', 'University of South Australia', 'University of Southern Queensland', 'University of Tasmania', 'University of Technology Sydney', 'University of the Sunshine Coast', 'UNSW Sydney', 'Victoria University', 'Western Sydney University', 'University of Wollongong'];
+  const COLOURS = [['Yellow', 'var(--hl-yellow)'], ['Pink', 'var(--hl-pink)'], ['Blue', 'var(--hl-blue)'], ['Green', 'var(--hl-green)'], ['Orange', 'var(--hl-orange)']];
+  const STEPS = ['Account', 'Your study', 'First subject', 'Your nights'];
+
+  /* the password is never saved anywhere: this is a prototype with no real accounts */
+  const S = { step: 0, name: '', email: '', uni: '', course: '', year: '1st year', period: 'Trimester',
+    sub: { name: '', code: '', weeks: 12, colour: COLOURS[0][1] }, goal: 20, lightsAt: '21:00', remind: true };
+  try { const saved = JSON.parse(localStorage.getItem('lamplight:profile') || 'null'); if (saved) Object.assign(S, saved, { step: 0 }); } catch (e) {}
+
+  function stepsBar() {
+    $('#steps').innerHTML = STEPS.map((t, i) => '<li class="step' + (i === S.step ? ' on' : i < S.step ? ' done' : '') + '"' + (i === S.step ? ' aria-current="step"' : '') + '><i>' + (i < S.step ? '✓' : i + 1) + '</i><span>' + t + '</span></li>').join('');
+  }
+
+  function preview() {
+    const first = S.name.trim().split(/\s+/)[0];
+    $('#pvHi').textContent = first ? 'Hi ' + first + '.' : 'Hi there.';
+    const bits = [S.course, S.uni].filter(Boolean);
+    $('#pvCourse').textContent = bits.length ? bits.join(', ') : 'Your course goes here';
+    const sn = S.sub.name.trim();
+    $('#pvTabs').innerHTML = sn
+      ? '<span><i style="background:' + S.sub.colour + '"></i>' + esc(sn) + '</span><span class="ghost">+ Add</span>'
+      : '<span class="ghost">+ Add your first subject</span>';
+    $('#pvSubName').textContent = sn || '(Subject)';
+    $('#pvWeeks').innerHTML = Array.from({ length: S.sub.weeks }, () => '<i class="' + (sn ? 'c' : '') + '" style="' + (sn ? 'background:' + S.sub.colour : '') + '"></i>').join('');
+    $('#pvWeeksNote').textContent = S.sub.weeks + ' weeks, ready for uploads';
+    $('#pvGoal').textContent = 'Tonight: ' + S.goal + ' questions';
+    $('#pvBar').style.width = Math.round(6 / S.goal * 100) + '%';
+    const [h, m] = S.lightsAt.split(':').map(Number);
+    const t = ((h % 12) || 12) + (m ? ':' + String(m).padStart(2, '0') : '') + (h >= 12 ? 'pm' : 'am');
+    $('#pvMoon').textContent = 'lights off from ' + t;
+  }
+
+  const field = (id, label, attrs, hint) => '<label class="field"><span>' + label + '</span><input id="' + id + '" ' + attrs + '>' + (hint ? '<span class="hintline">' + hint + '</span>' : '') + '<span class="err" id="' + id + 'Err" hidden></span></label>';
+
+  function render() {
+    stepsBar(); preview();
+    const C = $('#card');
+    if (S.step === 0) {
+      C.innerHTML = '<span class="hand">free while you\'re studying</span><h1>Make your Lamplight.</h1><p class="lede">Takes about a minute. Then drop in your first week and start practising tonight.</p>' +
+        '<div class="sso"><button class="btn" type="button" data-sso><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 12.2c0-.7-.1-1.3-.2-1.9H12v3.6h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.2Z" fill="#4285F4"/><path d="M12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.8-1.8-5.6-4.1H3.1v2.6A10 10 0 0 0 12 22Z" fill="#34A853"/><path d="M6.4 14a6 6 0 0 1 0-3.9V7.5H3.1a10 10 0 0 0 0 9Z" fill="#FBBC05"/><path d="M12 6c1.5 0 2.8.5 3.8 1.5l2.8-2.8A10 10 0 0 0 3.1 7.5l3.3 2.6C7.2 7.8 9.4 6 12 6Z" fill="#EA4335"/></svg>Continue with Google</button>' +
+        '<button class="btn" type="button" data-sso><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8.5" height="8.5" fill="#F25022"/><rect x="12.5" y="3" width="8.5" height="8.5" fill="#7FBA00"/><rect x="3" y="12.5" width="8.5" height="8.5" fill="#00A4EF"/><rect x="12.5" y="12.5" width="8.5" height="8.5" fill="#FFB900"/></svg>Continue with your uni (Microsoft)</button>' +
+        '<button class="btn" type="button" data-sso><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9a4.8 4.8 0 0 0-3.7-2c-1.6-.2-3.1.9-3.9.9s-2-.9-3.4-.9a5 5 0 0 0-4.2 2.6c-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6s1.8-.8 3.3-.8 2 .8 3.4.8 2.2-1.3 3.1-2.5a10 10 0 0 0 1.4-2.9 4.4 4.4 0 0 1-2.7-4.1ZM13.9 5a4.3 4.3 0 0 0 1-3.2 4.5 4.5 0 0 0-3 1.5 4.2 4.2 0 0 0-1 3.1c1.1.1 2.3-.6 3-1.4Z"/></svg>Continue with Apple</button></div>' +
+        '<p class="fine" id="ssoNote" hidden>Those buttons connect once Lamplight has real accounts. For now, fill in the form below.</p>' +
+        '<div class="or">or with email</div>' +
+        '<form id="f" novalidate>' + field('name', 'Your name', 'autocomplete="name" placeholder="e.g. Sam Nguyen" value="' + esc(S.name) + '"') +
+        field('email', 'Email', 'type="email" autocomplete="email" placeholder="you@uni.edu.au" value="' + esc(S.email) + '"', 'Your uni email works best.') +
+        '<label class="field"><span>Password</span><div class="pw"><input id="pass" type="password" autocomplete="new-password" placeholder="At least 8 characters"><button type="button" id="showPw">Show</button></div><div class="meter" id="meter"><i></i><i></i><i></i><i></i></div><span class="hintline" id="pwHint">Use 8 or more characters. A short sentence is easy to remember.</span><span class="err" id="passErr" hidden></span></label>' +
+        '<label class="check"><input type="checkbox" id="terms"><span>I agree to the terms and privacy policy. My uploads stay private to me.</span></label><span class="err" id="termsErr" hidden style="color:var(--bad);font-size:13.5px;font-weight:600;margin-top:-10px">Tick this to keep going.</span>' +
+        '<div class="actions"><span></span><button class="btn btn-yellow" type="submit">Create account</button></div></form>';
+      const pass = $('#pass');
+      pass.addEventListener('input', () => {
+        const v = pass.value; let sc = 0;
+        if (v.length >= 8) sc++; if (v.length >= 12) sc++; if (/[A-Z]/.test(v) && /[a-z]/.test(v)) sc++; if (/[\d\W]/.test(v)) sc++;
+        $('#meter').className = 'meter' + (v ? ' s' + Math.max(1, sc) : '');
+        $('#pwHint').textContent = !v ? 'Use 8 or more characters. A short sentence is easy to remember.' : sc >= 3 ? 'Strong. Nice.' : sc === 2 ? 'Good. A few more characters makes it stronger.' : 'A bit short. Try 8 or more characters.';
+      });
+      $('#showPw').addEventListener('click', e => { const on = pass.type === 'password'; pass.type = on ? 'text' : 'password'; e.target.textContent = on ? 'Hide' : 'Show'; });
+      ['name', 'email'].forEach(k => $('#' + k).addEventListener('input', e => { S[k] = e.target.value; preview(); }));
+      $('#f').addEventListener('submit', e => {
+        e.preventDefault();
+        let ok = true;
+        const err = (id, msg) => { const el = $('#' + id + 'Err'); el.hidden = !msg; el.textContent = msg || ''; const i = $('#' + id); if (i) i.setAttribute('aria-invalid', !!msg); if (msg) ok = false; };
+        err('name', S.name.trim() ? '' : 'Add your name so we know what to call you.');
+        err('email', /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(S.email.trim()) ? '' : 'That email doesn\'t look right. Check for a typo.');
+        err('pass', pass.value.length >= 8 ? '' : 'Your password needs at least 8 characters.');
+        $('#termsErr').hidden = $('#terms').checked; if (!$('#terms').checked) ok = false;
+        if (!ok) { const first = C.querySelector('[aria-invalid="true"]'); if (first) first.focus(); return; }
+        pass.value = '';
+        go(1);
+      });
+    }
+    else if (S.step === 1) {
+      C.innerHTML = '<span class="hand">so we can set things up right</span><h1>What are you studying?</h1><p class="lede">This shapes your weeks, your study periods and the way questions are written.</p>' +
+        '<form id="f" novalidate><label class="field"><span>University</span><input id="uni" list="unis" autocomplete="organization" placeholder="Start typing your uni" value="' + esc(S.uni) + '"><datalist id="unis">' + UNIS.map(u => '<option value="' + u + '">').join('') + '</datalist></label>' +
+        field('course', 'Course', 'placeholder="e.g. Bachelor of Nursing" value="' + esc(S.course) + '"') +
+        '<fieldset class="field"><legend>Year of study</legend><div class="chips" data-group="year">' + ['1st year', '2nd year', '3rd year', '4th year +', 'Postgrad'].map(v => '<button type="button" class="chip-b" data-v="' + v + '" aria-pressed="' + (S.year === v) + '">' + v + '</button>').join('') + '</div></fieldset>' +
+        '<fieldset class="field"><legend>Your uni runs on</legend><div class="chips" data-group="period">' + ['Trimester', 'Semester', 'Term', 'Not sure'].map(v => '<button type="button" class="chip-b" data-v="' + v + '" aria-pressed="' + (S.period === v) + '">' + v + 's</button>').join('').replace('Not sures', 'Not sure') + '</div></fieldset>' +
+        '<div class="actions"><button type="button" class="btn" data-back>Back</button><button class="btn btn-yellow" type="submit">Next</button></div></form>';
+      ['uni', 'course'].forEach(k => $('#' + k).addEventListener('input', e => { S[k] = e.target.value; preview(); }));
+      $('#f').addEventListener('submit', e => { e.preventDefault(); go(2); });
+    }
+    else if (S.step === 2) {
+      C.innerHTML = '<span class="hand">one is enough to start</span><h1>What\'s your first subject?</h1><p class="lede">It becomes your first tab. You can add more, and upload each week\'s content, straight after this.</p>' +
+        '<form id="f" novalidate>' + field('sname', 'Subject name', 'maxlength="60" autocomplete="off" placeholder="e.g. Consumer Behaviour" value="' + esc(S.sub.name) + '"') +
+        field('scode', 'Unit code <em>(optional)</em>', 'maxlength="12" autocomplete="off" placeholder="e.g. MMK265" value="' + esc(S.sub.code) + '"') +
+        '<fieldset class="field"><legend>How many weeks?</legend><div class="chips" data-group="weeks">' + [6, 10, 11, 12, 13].map(n => '<button type="button" class="chip-b" data-v="' + n + '" aria-pressed="' + (S.sub.weeks === n) + '">' + n + '</button>').join('') + '</div></fieldset>' +
+        '<fieldset class="field"><legend>Pick a highlighter</legend><div class="chips" data-group="colour">' + COLOURS.map(c => '<button type="button" class="swatch" data-v="' + c[1] + '" aria-label="' + c[0] + '" aria-pressed="' + (S.sub.colour === c[1]) + '" style="background:' + c[1] + '"></button>').join('') + '</div></fieldset>' +
+        '<div class="actions"><button type="button" class="btn" data-back>Back</button><span style="display:flex;gap:16px;align-items:center"><button type="button" class="skip" data-skip>Skip for now</button><button class="btn btn-yellow" type="submit">Next</button></span></div></form>';
+      $('#sname').addEventListener('input', e => { S.sub.name = e.target.value; preview(); });
+      $('#scode').addEventListener('input', e => { S.sub.code = e.target.value; });
+      $('#f').addEventListener('submit', e => {
+        e.preventDefault();
+        if (!S.sub.name.trim()) { const el = $('#snameErr'); el.hidden = false; el.textContent = 'Give it a name, or skip this step for now.'; $('#sname').setAttribute('aria-invalid', 'true'); $('#sname').focus(); return; }
+        go(3);
+      });
+    }
+    else if (S.step === 3) {
+      C.innerHTML = '<span class="hand">small goals actually get done</span><h1>How do your nights look?</h1><p class="lede">Pick a goal you could hit even on a tired night. You can change it any time.</p>' +
+        '<form id="f" novalidate><fieldset class="field"><legend>Nightly goal</legend><div class="goalcards" data-group="goal">' +
+        [[10, 'about 8 min'], [20, 'about 15 min'], [30, 'about 25 min']].map(g => '<button type="button" class="goalc" data-v="' + g[0] + '" aria-pressed="' + (S.goal === g[0]) + '"><b>' + g[0] + '</b><small>questions, ' + g[1] + '</small></button>').join('') + '</div></fieldset>' +
+        '<div class="row2"><label class="field"><span>Turn the lights off from</span><select id="lightsAt">' + ['19:00', '20:00', '21:00', '22:00', '23:00'].map(t => { const h = +t.slice(0, 2); return '<option value="' + t + '"' + (S.lightsAt === t ? ' selected' : '') + '>' + (h - 12) + 'pm</option>'; }).join('') + '<option value="never"' + (S.lightsAt === 'never' ? ' selected' : '') + '>Never, I\'ll do it myself</option></select></label>' +
+        '<label class="field"><span>Reminder</span><select id="remind"><option value="1"' + (S.remind ? ' selected' : '') + '>Nudge me at 8pm</option><option value="0"' + (!S.remind ? ' selected' : '') + '>No reminders</option></select></label></div>' +
+        '<div class="actions"><button type="button" class="btn" data-back>Back</button><button class="btn btn-yellow" type="submit">Finish</button></div></form>';
+      $('#lightsAt').addEventListener('change', e => { S.lightsAt = e.target.value === 'never' ? S.lightsAt : e.target.value; preview(); if (e.target.value === 'never') $('#pvMoon').textContent = 'lights: your call'; });
+      $('#remind').addEventListener('change', e => { S.remind = e.target.value === '1'; });
+      $('#f').addEventListener('submit', e => { e.preventDefault(); finish(); });
+    }
+    else {
+      const first = S.name.trim().split(/\s+/)[0] || 'there';
+      const sn = S.sub.name.trim();
+      C.innerHTML = '<span class="hand">welcome in</span><h1>You\'re in, ' + esc(first) + '.</h1><p class="lede">Here\'s what\'s set up:</p><ul class="done-list">' +
+        '<li>' + tick + 'Your account' + (S.uni ? ' at ' + esc(S.uni) : '') + '</li>' +
+        (sn ? '<li>' + tick + esc(sn) + (S.sub.code ? ' (' + esc(S.sub.code.toUpperCase()) + ')' : '') + ', ' + S.sub.weeks + ' weeks</li>' : '') +
+        '<li>' + tick + 'A nightly goal of ' + S.goal + ' questions</li></ul>' +
+        '<div class="actions" style="margin-top:18px"><a class="btn" href="index.html">Look around first</a><a class="btn btn-yellow" id="goUpload" href="subject.html">' + (sn ? 'Upload Week 1' : 'Add your first subject') + '</a></div>' +
+        '<p class="fine" style="margin-top:16px">Prototype note: this saves your name, uni and subject in this browser only. No account is created and your password isn\'t stored.</p>';
+      if (window.__subId) $('#goUpload').href = 'subject.html#' + window.__subId;
+    }
+  }
+  const tick = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+
+  function go(n) { S.step = n; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); const f = $('#card input'); if (f && n < 4) setTimeout(() => f.focus({ preventScroll: true }), 250); }
+
+  function finish() {
+    const sn = S.sub.name.trim();
+    try {
+      const { name, email, uni, course, year, period, goal, lightsAt, remind } = S;
+      localStorage.setItem('lamplight:profile', JSON.stringify({ name, email, uni, course, year, period, goal, lightsAt, remind }));
+      if (sn) {
+        const list = window.Lamplight.subjects();
+        let ex = list.find(s => s.name.toLowerCase() === sn.toLowerCase());
+        if (!ex) { ex = { id: 's' + Date.now().toString(36), name: sn, code: S.sub.code.trim().toUpperCase(), weeks: S.sub.weeks, colour: S.sub.colour, created: Date.now() }; list.push(ex); window.Lamplight.saveSubjects(list); }
+        window.__subId = ex.id;
+      }
+    } catch (e) {}
+    go(4); confetti();
+  }
+
+  function confetti() {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const box = document.createElement('div'); box.className = 'confetti';
+    const cols = ['var(--hl-yellow)', 'var(--hl-pink)', 'var(--hl-blue)', 'var(--hl-green)', 'var(--hl-orange)'];
+    for (let i = 0; i < 50; i++) { const c = document.createElement('i'); c.style.left = Math.random() * 100 + '%'; c.style.background = cols[i % 5]; c.style.animationDelay = (Math.random() * .5) + 's'; c.style.transform = 'rotate(' + (Math.random() * 90) + 'deg)'; box.appendChild(c); }
+    document.body.appendChild(box); setTimeout(() => box.remove(), 2600);
+  }
+
+  document.addEventListener('click', e => {
+    const t = e.target;
+    if (t.closest('[data-back]')) { go(Math.max(0, S.step - 1)); return; }
+    if (t.closest('[data-skip]')) { S.sub.name = ''; go(3); return; }
+    if (t.closest('[data-sso]')) { $('#ssoNote').hidden = false; return; }
+    const b = t.closest('[data-group] [data-v]');
+    if (b) {
+      const g = b.closest('[data-group]').dataset.group, v = b.dataset.v;
+      b.closest('[data-group]').querySelectorAll('[data-v]').forEach(x => x.setAttribute('aria-pressed', x === b));
+      if (g === 'year') S.year = v; else if (g === 'period') S.period = v;
+      else if (g === 'weeks') S.sub.weeks = +v; else if (g === 'colour') S.sub.colour = v; else if (g === 'goal') S.goal = +v;
+      preview();
+    }
+  });
+
+  const now = new Date(); $('#pvTime').textContent = ((now.getHours() % 12) || 12) + ':' + String(now.getMinutes()).padStart(2, '0') + (now.getHours() >= 12 ? ' pm' : ' am');
+  render();
+})();
+</script>
+<script src="js/tour.js"></script>
+</body>
+</html>

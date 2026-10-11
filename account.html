@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Account · Lamplight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Caveat:wght@600;700&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/lamplight.css">
+<style>
+  .navlinks a[aria-current="page"] { background: var(--hl-yellow); color: #141414; }
+  .avatar { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--ink); background: var(--hl-pink); color: #141414; display: grid; place-items: center; font: 800 17px var(--font-display); text-decoration: none; box-shadow: 0 3px 0 var(--shadow); }
+  .icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--line); background: var(--card); display: grid; place-items: center; cursor: pointer; color: var(--ink); }
+  .pagefoot { margin-top: 80px; border-top: 2px solid var(--ink); padding-block: 24px 40px; color: var(--muted); font-size: 14px; }
+  .acct { margin-top: 40px; display: grid; grid-template-columns: 1.15fr 1fr; gap: 28px; align-items: start; }
+  @media (max-width: 860px) { .acct { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 2.5px solid var(--ink); border-radius: 28px; box-shadow: 0 8px 0 var(--shadow); padding: 38px 36px; }
+  @media (max-width: 600px) { .card { padding: 26px 20px; } }
+  .card .hand { font-size: 28px; color: var(--muted); transform: rotate(-2deg); display: inline-block; }
+  .card h1 { font-size: clamp(40px, 6vw, 72px); letter-spacing: -0.045em; margin: 6px 0 0; line-height: .98; }
+  .card h2 { font-size: 26px; letter-spacing: -0.03em; margin: 0; }
+  .card p { font-size: 17.5px; color: var(--ink-2); max-width: 32em; margin: 16px 0 0; }
+  .form { display: grid; gap: 16px; margin-top: 26px; max-width: 420px; }
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+  .msg { margin: 0; font-weight: 600; font-size: 15px; padding: 12px 14px; border-radius: 12px; }
+  .msg.bad { color: var(--bad); background: var(--bad-soft); }
+  .msg.good { color: var(--good); background: var(--good-soft); }
+  .linkish { justify-self: start; border: 0; background: none; padding: 0; font: 600 15px var(--font-body); color: var(--ink-2); text-decoration: underline; cursor: pointer; }
+  .status { display: flex; align-items: center; gap: 12px; margin-top: 22px; padding: 16px 18px; border: 2px solid var(--line); border-radius: 16px; background: var(--paper); }
+  .status i { flex: none; width: 16px; height: 16px; border-radius: 99px; border: 2px solid var(--ink); background: var(--good); }
+  .status[data-s="syncing"] i { background: var(--hl-yellow); }
+  .status[data-s="error"] i { background: var(--bad); }
+  .status b { display: block; font-size: 16px; }
+  .status small { color: var(--muted); font-size: 14px; }
+  .side h2 { margin-bottom: 14px; }
+  .side ol { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 14px; }
+  .side ol li { counter-increment: s; display: grid; grid-template-columns: 34px 1fr; gap: 12px; font-size: 15.5px; color: var(--ink-2); }
+  .side ol li::before { content: counter(s); width: 30px; height: 30px; border-radius: 10px; border: 2px solid var(--ink); background: var(--hl-blue); color: #141414; display: grid; place-items: center; font: 800 15px var(--font-display); }
+  .side code { font-family: var(--font-mono); font-size: 13.5px; background: var(--paper-2); padding: 1px 6px; border-radius: 6px; }
+  .side ul { margin: 0; padding-left: 20px; display: grid; gap: 8px; color: var(--ink-2); font-size: 15.5px; }
+</style>
+<script src="js/config.js"></script>
+<script src="js/sync.js"></script>
+</head>
+<body class="app">
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="bar">
+      <a class="brand" href="index.html" aria-label="Lamplight home">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 14 16 4l8 10Z" fill="var(--hl-yellow)" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><path d="M11 17 5 29h22l-6-12Z" fill="var(--hl-yellow)" opacity=".45"/><circle cx="16" cy="15.5" r="2" fill="var(--ink)"/></svg>
+        Lamplight
+      </a>
+      <nav class="navlinks" aria-label="Main">
+        <a href="index.html" data-nav="home">Home</a>
+        <a href="subject.html" data-nav="learning">Learning</a>
+        <a href="diagnostic.html">Diagnostic</a>
+        <a href="analytics.html">Analytics</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn" type="button" id="lights" aria-label="Turn lights off" title="Lights off">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
+        </button>
+        <a class="avatar" href="account.html" aria-label="Your account">S</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="acct">
+    <section class="card" id="mainCard" aria-live="polite"></section>
+    <aside class="card side" id="sideCard"></aside>
+  </div>
+</main>
+
+<footer class="pagefoot"><div class="wrap">Your progress still saves on this device first, so Lamplight keeps working without internet. The cloud copy catches up when you're back online.</div></footer>
+
+<script src="js/account.js"></script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const S = window.LamplightSync;
+  let mode = 'in', note = null, busy = false;
+
+  const when = t => {
+    if (!t) return 'not yet';
+    const m = Math.round((Date.now() - t) / 60000);
+    if (m < 1) return 'just now';
+    if (m < 60) return m + ' min ago';
+    return new Date(t).toLocaleString('en-AU', { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+  };
+
+  function setupSteps() {
+    return '<span class="hand">one time setup</span><h2>Connect your cloud</h2><ol>' +
+      '<li><span>Make a free project at <b>supabase.com</b>. Any name is fine, pick the Sydney region.</span></li>' +
+      '<li><span>Open <b>SQL Editor</b>, paste in everything from <code>supabase/schema.sql</code> and press Run.</span></li>' +
+      '<li><span>Copy the <b>Project URL</b> and <b>anon public</b> key from Project Settings, API, into <code>js/config.js</code>.</span></li>' +
+      '<li><span>Come back here and create your account.</span></li></ol>';
+  }
+  function whySide() {
+    return '<span class="hand">what gets saved</span><h2>Everything you do here</h2><ul>' +
+      '<li>Your subjects and the weeks you\'ve uploaded</li><li>Every practice answer and SmartScore</li>' +
+      '<li>Diagnostic levels and runs</li><li>Your profile and nightly goal</li></ul>' +
+      '<p style="font-size:15px">Lights on or off stays separate on each device, so your phone can stay dark at night.</p>';
+  }
+
+  function render(info) {
+    info = info || S.info();
+    const main = $('#mainCard'), side = $('#sideCard');
+    if (!info.ready) {
+      main.innerHTML = '<span class="hand">your account</span><h1>Not connected yet.</h1>' +
+        '<p>Lamplight is saving on this device only. Connect it to your own Supabase project and your progress will follow you to your phone, your laptop, anywhere.</p>' +
+        '<div class="status" data-s="error"><i></i><div><b>Saving on this device only</b><small>Fill in js/config.js to turn on cloud saving</small></div></div>';
+      side.innerHTML = setupSteps();
+      return;
+    }
+    side.innerHTML = whySide();
+    if (info.signedIn) {
+      const label = { synced: 'Saved to the cloud', syncing: 'Saving now', error: 'Couldn\'t save just now', off: 'Not saving' }[info.status] || 'Saved';
+      const sub = info.status === 'error' ? esc(info.error || 'Check your internet. It will try again.') :
+        'Last synced ' + when(info.last) + (info.pending ? ', ' + info.pending + ' change' + (info.pending > 1 ? 's' : '') + ' waiting' : '');
+      main.innerHTML = '<span class="hand">your account</span><h1>You\'re in.</h1>' +
+        '<p>Signed in as <b>' + esc(info.email) + '</b>. Open Lamplight on any device, sign in with the same email, and you\'ll pick up right where you left off.</p>' +
+        '<div class="status" data-s="' + info.status + '"><i></i><div><b>' + label + '</b><small>' + sub + '</small></div></div>' +
+        '<div class="actions" style="margin-top:24px"><button class="btn btn-yellow" id="syncNow" type="button"' + (busy ? ' disabled' : '') + '>Sync now</button>' +
+        '<button class="btn" id="out" type="button"' + (busy ? ' disabled' : '') + '>Sign out</button></div>';
+      $('#syncNow').onclick = () => { busy = true; render(); S.syncNow().then(() => { busy = false; render(); }); };
+      $('#out').onclick = () => { busy = true; render(); S.signOut().then(() => { busy = false; note = ['good', 'Signed out. Everything stays saved on this device too.']; render(); }); };
+      return;
+    }
+    const up = mode === 'up';
+    const keepEm = $('#em') ? $('#em').value : '', keepPw = $('#pw') ? $('#pw').value : '';
+    main.innerHTML = '<span class="hand">' + (up ? 'new here' : 'welcome back') + '</span><h1>' + (up ? 'Save your Lamplight.' : 'Sign in.') + '</h1>' +
+      '<p>' + (up ? 'Make an account so your subjects, scores and diagnostic follow you to every device. Whatever is on this device now goes up with it.' : 'Sign in to bring your progress down from the cloud and keep it saving.') + '</p>' +
+      '<form class="form" id="f" novalidate>' +
+        '<label class="field"><span>Email</span><input id="em" type="email" autocomplete="email" required></label>' +
+        '<label class="field"><span>Password' + (up ? ' <em>(6 or more characters)</em>' : '') + '</span><input id="pw" type="password" autocomplete="' + (up ? 'new-password' : 'current-password') + '" required minlength="6"></label>' +
+        (note ? '<p class="msg ' + note[0] + '">' + esc(note[1]) + '</p>' : '') +
+        '<div class="actions"><button class="btn btn-yellow" type="submit"' + (busy ? ' disabled' : '') + '>' + (busy ? 'One moment' : up ? 'Create account' : 'Sign in') + '</button></div>' +
+        '<button class="linkish" type="button" id="swap">' + (up ? 'Already have an account? Sign in' : 'New here? Create an account') + '</button>' +
+      '</form>';
+    const prof = (window.Lamplight && window.Lamplight.profile && window.Lamplight.profile()) || {};
+    $('#em').value = keepEm || prof.email || ''; $('#pw').value = keepPw;
+    $('#swap').onclick = () => { mode = up ? 'in' : 'up'; note = null; render(); };
+    $('#f').onsubmit = e => {
+      e.preventDefault();
+      const em = $('#em').value.trim(), pw = $('#pw').value;
+      if (!/^\S+@\S+\.\S+$/.test(em)) { note = ['bad', 'Pop in your email address.']; return render(); }
+      if (pw.length < 6) { note = ['bad', 'Your password needs at least 6 characters.']; return render(); }
+      busy = true; note = null; render(); $('#em').value = em;
+      (up ? S.signUp(em, pw) : S.signIn(em, pw).then(() => ({ signedIn: true })))
+        .then(r => {
+          busy = false;
+          if (r && r.confirm) { mode = 'in'; note = ['good', 'Nearly there. Check your email for a confirm link, click it, then come back and sign in. If the link opens a page that won\'t load, that\'s fine, it still worked.']; }
+          else note = null;
+          render();
+        })
+        .catch(err => { busy = false; note = ['bad', err.message]; render(); $('#em').value = em; });
+    };
+  }
+
+  S.on(render);
+  setInterval(() => { if (S.info().signedIn) render(); }, 30000);
+  document.getElementById('lights').addEventListener('click', () => {
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (dark) document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', 'dark');
+  });
+})();
+</script>
+<script src="js/tour.js"></script>
+</body>
+</html>

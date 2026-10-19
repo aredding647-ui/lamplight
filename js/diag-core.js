@@ -18,6 +18,7 @@
   const VERB = { 1: 'identify define recognise recognize match select choose place map link position sequence describe list name', 2: 'explain distinguish classify differentiate contrast compare translate trace rank summarise', 3: 'apply calculate interpret use predict demonstrate respond align structure', 4: 'analyse analyze diagnose evaluate weigh judge', 5: 'critique design plan synthesise construct create' };
   const TYPE_ADD = { mc: -0.6, analogy: 0, fill_gap: 0, case: 0.5, type_answer: 0.5 };
   function diffOf(q, k) {
+    if (q.lvl) return q.lvl; /* hand-rated difficulty, when the question has one */
     const v = (k.name.split(/\s+/)[0] || '').toLowerCase();
     let b = 2; for (const lv in VERB) if (VERB[lv].split(' ').includes(v)) b = +lv;
     return Math.max(1, Math.min(TOP, Math.round(b + (TYPE_ADD[q.type] || 0))));
@@ -123,6 +124,17 @@
     if (!item) {
       let pool = weekPool(slot.s, slot.w).filter(x => !this.used.has(x.q.prompt));
       if (!pool.length) pool = weekPool(slot.s, slot.w);
+      /* after a miss, only something genuinely easier will do; if this week has nothing easier, use the easier steps */
+      if (slot.below != null) {
+        const easier = pool.filter(x => x.d < slot.below);
+        if (easier.length) pool = easier;
+        else for (let d = 0; d >= FLOOR && !item; d--) { const low = lowItems(slot.s, slot.w, d).filter(x => !this.used.has(x.q.prompt)); if (low.length) item = rand(low); }
+      }
+    }
+    if (!item) {
+      let pool = weekPool(slot.s, slot.w).filter(x => !this.used.has(x.q.prompt));
+      if (!pool.length) pool = weekPool(slot.s, slot.w);
+      if (slot.below != null && pool.some(x => x.d < slot.below)) pool = pool.filter(x => x.d < slot.below);
       const best = Math.min(...pool.map(x => Math.abs(x.d - Math.max(1, target))));
       item = rand(pool.filter(x => Math.abs(x.d - Math.max(1, target)) === best));
     }

@@ -5,6 +5,7 @@
   new MutationObserver(function () { try { localStorage.setItem('lamplight:theme', document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'); } catch (e) {} }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   var sw = document.getElementById('lights');
   if (sw && sw.getAttribute('role') === 'switch' && document.documentElement.getAttribute('data-theme') === 'dark') { sw.setAttribute('aria-checked', 'true'); var lb = document.getElementById('lightsLbl'); if (lb) lb.textContent = 'Lights on'; }
+  return; /* Pages button switched off. Remove this line to bring it back while building. */
 
   var PAGES = [
     { g: 'Built', items: [

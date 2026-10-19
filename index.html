@@ -2,6 +2,11 @@
 <html lang="en-AU">
 <head>
 <meta charset="utf-8">
+<script>
+  /* Signed in? Skip the welcome page and go straight to your dashboard.
+     (Add ?welcome to the address to see this page anyway.) */
+  try { if (localStorage.getItem('lamplight:_session') && !/[?&]welcome\b/.test(location.search)) location.replace('dashboard.html' + location.hash); } catch (e) {}
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Lamplight</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
